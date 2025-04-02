@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!--favicon-->
+    <link rel="icon" href="assets/images/favicon-32x32.png" type="image/png" />
+    <!--plugins-->
+    <link href="assets/plugins/simplebar/css/simplebar.css" rel="stylesheet" />
+    <link
+      href="assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css"
+      rel="stylesheet"
+    />
+    <link
+      href="assets/plugins/metismenu/css/metisMenu.min.css"
+      rel="stylesheet"
+    />
+    <!-- loader-->
+    <link href="assets/css/pace.min.css" rel="stylesheet" />
+    <script src="assets/js/pace.min.js"></script>
+    <!-- Bootstrap CSS -->
+
+    <link href="assets/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet"> -->
+    <link href="assets/css/app.css" rel="stylesheet" />
+    <link href="assets/css/icons.css" rel="stylesheet" />
+    <title>PowerMeter - SmartSoulPCB</title>
+    <!--plugins-->
+    <script src="assets/js/jquery.min.js"></script>
+    <script>
+      // // var house_master = $.base64.decode(window.location.hash.substring(1)).substring(0, 8);
+      let a = window.location.href.split("/")[4];
+      // alert(a.toString().length);
+      if (a.toString().length > 50) {
+        // http://localhost/powermeter/page_login.html?fbclid=IwZXh0bgNhZW0CMTAAAR0RHDqCnQQV2vnYEbk79amlP0sIVI0KDTnscoUCN9FwLF6
+        let b = a.split("html"),
+          c = document.URL.split("/");
+        // alert(c[0]+'//'+c[2]+'/'+c[3]+'/'+b[0]+'html')
+        // console.log(c[2])
+        window.location.href =
+          c[0] + "//" + c[2] + "/" + c[3] + "/" + b[0] + "html";
+      }
+      $.getJSON(
+        "db/session.php",
+        function (res) {
+          // console.log(res)
+          if (res.account !== "") {
+            window.location.href = document.URL.substring(0, document.URL.length - 15)
+            // if (res.site_.count_site == 1 && res.site_.count_House == 1) {
+            //   window.location.href =
+            //     document.URL.substring(0, document.URL.length - 15) +
+            //     "#" +
+            //     res.site_.h;
+            // } else {
+            //   window.location.href =
+            //     document.URL.substring(0, document.URL.length - 15) +
+            //     "#" +
+            //     $.base64.encode("0,0,0,0,0zasn");
+            // }
+          }
+        }
+      );
+    </script>
+  </head>
+  <!-- 222854  217879 -->
+  <body class="bg-login">
+    <!--wrapper-->
+    <div class="wrapper">
+      <div
+        class="section-authentication-signin d-flex align-items-center justify-content-center my-5 my-lg-0"
+      >
+        <div class="container-fluid">
+          <div class="row row-cols-1 row-cols-lg-2 row-cols-xl-3">
+            <div class="col mx-auto">
+              <div class="mb-4 text-center">
+                <!-- <img src="public/images/logo/logo-light-text.png" width="100%" alt="" /> -->
+                <!-- <div class="">
+                                <img src="assets/images/logo-icon.png" class="logo-icon" alt="logo icon">
+                            </div>
+                            <div class="">
+                                <h4 class="logo-text"><b>POWER</b>METER</h4>
+                            </div> -->
+              </div>
+              <div class="card">
+                <div class="card-body page-login">
+                  <div class="border p-4 rounded">
+                    <div class="text-center">
+                      <div class="">
+                        <img
+                          src="assets/images/logo-icon.png"
+                          class="logo-icon"
+                          alt="logo icon"
+                        />
+                      </div>
+                      <div class="">
+                        <h1 class="logo-text"><b>POWER</b>METER</h1>
+                      </div>
+                      <br /><br />
+                      <h3 style="font-weight: 700">ลงชื่อเข้าใช้</h3>
+                      <!-- <p>Don't have an account yet? <a href="authentication-signup.html">Sign up here</a> -->
+                      <!-- </p> -->
+                      <div
+                        class="alert border-0 border-start border-5 border-danger alert-dismissible fade show py-2 l_err"
+                      >
+                        <div class="d-flex align-items-center">
+                          <div class="font-35 text-danger">
+                            <i class="bx bxs-message-square-x"></i>
+                          </div>
+                          <div class="ms-3">
+                            <h6 class="mb-0 text-danger">
+                              ชื่อผู้ใช้์ หรือรหัสผ่านไม่ถูกตัอง !!!
+                            </h6>
+                            <div>กรุณาระบุ ชื่อผู้ใช้ หรือรหัสผ่านใหม่</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-body">
+                    <form class="row g-3" id="login" onsubmit="return false">
+                      <div class="col-12">
+                        <label for="name" class="form-label">ชื่อผู้ใช้</label>
+                        <input
+                          type="text"
+                          class="form-control"
+                          name="name"
+                          placeholder="ชื่อผู้ใช้"
+                        />
+                        <div class="invalid-feedback">กรุณาระบุชื่อผู้ใช้</div>
+                      </div>
+                      <div class="col-12">
+                        <label for="pass" class="form-label">รหัสผ่าน</label>
+                        <div class="input-group" id="show_hide_password">
+                          <input
+                            type="password"
+                            class="form-control border-end-0"
+                            name="pass"
+                            placeholder="รหัสผ่าน"
+                          />
+                          <a
+                            href="javascript:;"
+                            class="input-group-text bg-transparent"
+                            ><i class="bx bx-hide"></i
+                          ></a>
+                          <div class="invalid-feedback">กรุณาระบุรหัสผ่าน</div>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <!-- <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
+                                                <label class="form-check-label" for="flexSwitchCheckChecked">Remember Me</label>
+                                            </div> -->
+                      </div>
+                      <!-- <div class="col-md-6 text-end btn_forgot "> <a href="javascript:; ">ลืมรหัสผ่าน ?</a></div> -->
+                      <div class="col-12">
+                        <div class="d-grid">
+                          <button type="submit" class="btn btn-primary">
+                            <i class="bx bxs-lock-open"></i>เข้าสู่ระบบ
+                          </button>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!--end row-->
+      </div>
+    </div>
+    <!--end wrapper-->
+    <!-- Bootstrap JS -->
+    <script src="assets/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/plugins/simplebar/js/simplebar.min.js"></script>
+    <script src="assets/plugins/metismenu/js/metisMenu.min.js"></script>
+    <script src="assets/js/decode.js"></script>
+    <!-- sweetalert2 -->
+    <script src="assets/plugins/sweetalert2-7.28.12/dist/sweetalert2.all.min.js"></script>
+    <script>
+      $(document).ready(function () {
+        $("#show_hide_password a").on("click", function (event) {
+          event.preventDefault();
+          if ($("#show_hide_password input").attr("type") == "text") {
+            $("#show_hide_password input").attr("type", "password");
+            $("#show_hide_password i").addClass("bx-hide");
+            $("#show_hide_password i").removeClass("bx-show");
+          } else if (
+            $("#show_hide_password input").attr("type") == "password"
+          ) {
+            $("#show_hide_password input").attr("type", "text");
+            $("#show_hide_password i").removeClass("bx-hide");
+            $("#show_hide_password i").addClass("bx-show");
+          }
+        });
+      });
+      // alert(document.URL.substring(0, document.URL.length-15))
+      // $(".page-login").show();
+      // $(".page-forgot").hide();
+
+      $(".l_err").hide();
+      $("#login").submit(function (e) {
+        e.preventDefault();
+        if ($([this.name]).val() === "" && $([this.pass]).val() === "") {
+          $([this.name]).addClass("is-invalid");
+          $([this.pass]).addClass("is-invalid");
+          return false;
+        }
+        if ($([this.name]).val() === "") {
+          $([this.name]).addClass("is-invalid");
+          return false;
+        } else {
+          $([this.name]).removeClass("is-invalid");
+        }
+        if ($([this.pass]).val() === "") {
+          $([this.pass]).addClass("is-invalid");
+          return false;
+        } else {
+          $([this.pass]).removeClass("is-invalid");
+        }
+        // if (isValidEmailAddress($([this.name]).val())) {
+        //     var status = "email";
+        // } else {
+        //     var status = "user";
+        // }
+        // alert($([this.name]).val())
+        $.ajax({
+          type: "POST",
+        //   url: "https://powermeter.smartsoul-pcb.com/db/login.php",
+          url: "db/login.php",
+          data: $(this).serialize(),
+          dataType: "json",
+          success: function (res) {
+            // console.log(res)
+            // return false
+            if (res.account_name === "No user") {
+              $(".l_err").show();
+              return false;
+            } 
+            else if(res.account_name === 'Disallow'){
+              swal({
+                  title: 'ระงับการใช้งานชั่วคราว !',
+                  html: "บัญชีของคุณถูกระงับการใช้งานชั่วคราว <br> กรุณาติดต่อผู้ดูแลระบบ",
+                  type: 'warning',
+                  allowOutsideClick: false,
+                  confirmButtonColor: '#32CD32'
+              });
+              return false;
+            }else{
+              $.ajax({
+                url: "db/session.php",
+                type: "POST",
+                data: {
+                  login: res,
+                },
+                dataType: 'json',
+                success: function (data) {
+                  // console.log(data);
+
+                  
+                  if (res.account != "") {
+                    // alert(res.name_login)
+                    // return false;
+                    window.location.href = document.URL.substring(0, document.URL.length-15)
+                    // if(res.site_.count_site == 1 && res.site_.count_House == 1){
+                    //     window.location.href = document.URL.substring(0, document.URL.length-15)+"#"+res.site_.h;
+                    // }else{
+                    //     window.location.href = document.URL.substring(0, document.URL.length-15)+"#"+$.base64.encode('0,0,0,0,0zasn');
+                    // }
+                  }
+                },
+              });
+            }
+          },
+          error: function (data) {
+            swal({
+                title: 'Error',
+                text: "เกิดข้อผิดพลาด",
+                type: 'warning',
+                allowOutsideClick: false,
+                confirmButtonColor: '#32CD32'
+            });
+          },
+        });
+      });
+    </script>
+  </body>
+</html>
