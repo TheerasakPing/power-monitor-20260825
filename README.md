@@ -1,138 +1,140 @@
-# Power Meter - SmartSoulPCB
+# Power Meter - SmartSoulPCB (ระบบวัดพลังงานไฟฟ้า)
 
-## Overview
+## ภาพรวม
 
-This project is a web-based power monitoring system called "PowerMeter," developed by SmartSoulPCB. It's designed to track and display real-time and historical power consumption data from various meters and sites. The application provides a user-friendly interface for monitoring voltage, current, power, energy, and temperature.
+โปรเจ็กต์นี้คือระบบตรวจสอบพลังงานไฟฟ้าผ่านเว็บที่ชื่อว่า "PowerMeter" พัฒนาโดย SmartSoulPCB ออกแบบมาเพื่อติดตามและแสดงข้อมูลการใช้พลังงานแบบเรียลไทม์และย้อนหลัง จากมิเตอร์และไซต์ต่างๆ แอปพลิเคชันนี้มีอินเทอร์เฟซที่ใช้งานง่ายสำหรับการตรวจสอบแรงดันไฟฟ้า กระแสไฟฟ้า กำลังไฟฟ้า พลังงาน และอุณหภูมิ
 
-## Key Features
+## คุณสมบัติหลัก
 
-*   **Dashboard:** Displays real-time data for voltage, current, power, and temperature.
-*   **Site Management:** Allows users to monitor multiple sites and their associated meters.
-*   **Meter Monitoring:** Provides detailed information for individual meters, including phase-specific data (A, B, C) for 3-phase systems.
-*   **Data Visualization:** Uses ECharts to display historical data in interactive charts, including energy, voltage, current, power, and temperature.
-*   **Data Reporting:** Offers data reporting features with options for real-time, 24-hour, 7-day, monthly, and yearly views.
-*   **User Management:** Enables administrators to manage user accounts, including adding, editing, and deleting users.
-*   **Profile Management:** Allows users to manage their profiles, including changing their username, password, and profile picture.
-*   **Theme Customization:** Supports both light and dark themes, which can be toggled by the user.
-*   **Responsive Design:** Adapts to different screen sizes for optimal viewing on various devices.
-*   **Realtime Updates:** The dashboard and data tables update in real-time to reflect the latest sensor readings.
-*   **Data Export:** Allows users to export data in CSV format.
-*   **Status Indicator:** Shows the online/offline status of each meter.
+*   **แดชบอร์ด (Dashboard):** แสดงข้อมูลแบบเรียลไทม์ของแรงดันไฟฟ้า กระแสไฟฟ้า กำลังไฟฟ้า และอุณหภูมิ
+*   **การจัดการไซต์ (Site Management):** อนุญาตให้ผู้ใช้ตรวจสอบหลายไซต์และมิเตอร์ที่เกี่ยวข้อง
+*   **การตรวจสอบมิเตอร์ (Meter Monitoring):** ให้ข้อมูลรายละเอียดสำหรับมิเตอร์แต่ละตัว รวมถึงข้อมูลเฉพาะเฟส (A, B, C) สำหรับระบบ 3 เฟส
+*   **การแสดงข้อมูล (Data Visualization):** ใช้ ECharts เพื่อแสดงข้อมูลย้อนหลังในรูปแบบแผนภูมิแบบอินเทอร์แอคทีฟ รวมถึงพลังงาน แรงดันไฟฟ้า กระแสไฟฟ้า กำลังไฟฟ้า และอุณหภูมิ
+*   **การรายงานข้อมูล (Data Reporting):** มีคุณสมบัติการรายงานข้อมูลพร้อมตัวเลือกสำหรับการดูแบบเรียลไทม์ 24 ชั่วโมง 7 วัน รายเดือน และรายปี
+*   **การจัดการผู้ใช้ (User Management):** ช่วยให้ผู้ดูแลระบบสามารถจัดการบัญชีผู้ใช้ รวมถึงการเพิ่ม แก้ไข และลบผู้ใช้
+*   **การจัดการโปรไฟล์ (Profile Management):** อนุญาตให้ผู้ใช้จัดการโปรไฟล์ของตนเอง รวมถึงการเปลี่ยนชื่อผู้ใช้ รหัสผ่าน และรูปโปรไฟล์
+*   **การปรับแต่งธีม (Theme Customization):** รองรับทั้งธีมสว่างและธีมมืด ซึ่งผู้ใช้สามารถสลับได้
+*   **การออกแบบที่ตอบสนอง (Responsive Design):** ปรับให้เข้ากับขนาดหน้าจอต่างๆ เพื่อการรับชมที่ดีที่สุดบนอุปกรณ์ต่างๆ
+*   **การอัปเดตแบบเรียลไทม์ (Realtime Updates):** แดชบอร์ดและตารางข้อมูลจะอัปเดตแบบเรียลไทม์เพื่อสะท้อนค่าล่าสุดจากเซ็นเซอร์
+*   **การส่งออกข้อมูล (Data Export):** อนุญาตให้ผู้ใช้ส่งออกข้อมูลในรูปแบบ CSV
+*   **ตัวบ่งชี้สถานะ (Status Indicator):** แสดงสถานะออนไลน์/ออฟไลน์ของมิเตอร์แต่ละตัว
+* **การเข้าสู่ระบบ (Login):** มีหน้าสำหรับเข้าสู่ระบบ
 
-## Technologies Used
+## เทคโนโลยีที่ใช้
 
-*   **HTML5:** For structuring the web page.
-*   **CSS3:** For styling and layout, including custom styles for the application.
-*   **JavaScript:** For interactivity, data handling, and real-time updates.
-*   **jQuery:** For simplifying DOM manipulation and AJAX requests.
-*   **Bootstrap 5:** For responsive design and UI components.
-*   **ECharts:** For creating interactive charts.
-*   **DataTables:** For displaying data in sortable and searchable tables.
-*   **Moment.js:** For date and time formatting.
-*   **Feather Icons:** For vector icons.
-*   **SweetAlert2:** For user-friendly alerts and confirmations.
-*   **Pace.js:** For the loading progress bar.
-*   **Simplebar:** For custom scrollbars.
-*   **MetisMenu:** For the sidebar menu.
-*   **Perfect-scrollbar:** For custom scrollbars.
-*   **Customizable-Loading-Modal-Plugin:** For loading modals.
-* **Apexcharts:** For chart.
-* **PHP:** For server-side logic and database interactions (implied from file paths like `db/session.php`).
-* **MySQL:** For database (implied from PHP usage).
+*   **HTML5:** สำหรับโครงสร้างหน้าเว็บ
+*   **CSS3:** สำหรับการจัดรูปแบบและเลย์เอาต์ รวมถึงสไตล์ที่กำหนดเองสำหรับแอปพลิเคชัน
+*   **JavaScript:** สำหรับการโต้ตอบ การจัดการข้อมูล และการอัปเดตแบบเรียลไทม์
+*   **jQuery:** สำหรับการจัดการ DOM และคำขอ AJAX ที่ง่ายขึ้น
+*   **Bootstrap 5:** สำหรับการออกแบบที่ตอบสนองและส่วนประกอบ UI
+*   **ECharts:** สำหรับการสร้างแผนภูมิแบบอินเทอร์แอคทีฟ
+*   **DataTables:** สำหรับการแสดงข้อมูลในตารางที่เรียงลำดับและค้นหาได้
+*   **Moment.js:** สำหรับการจัดรูปแบบวันที่และเวลา
+*   **Feather Icons:** สำหรับไอคอนเวกเตอร์
+*   **SweetAlert2:** สำหรับการแจ้งเตือนและการยืนยันที่ใช้งานง่าย
+*   **Pace.js:** สำหรับแถบความคืบหน้าในการโหลด
+*   **Simplebar:** สำหรับแถบเลื่อนแบบกำหนดเอง
+*   **MetisMenu:** สำหรับเมนูแถบด้านข้าง
+*   **Perfect-scrollbar:** สำหรับแถบเลื่อนแบบกำหนดเอง
+*   **Customizable-Loading-Modal-Plugin:** สำหรับโมดัลการโหลด
+*   **Apexcharts:** สำหรับแผนภูมิ
+*   **PHP:** สำหรับตรรกะฝั่งเซิร์ฟเวอร์และการโต้ตอบกับฐานข้อมูล (โดยนัยจากพาธไฟล์เช่น `db/session.php`)
+*   **MySQL:** สำหรับฐานข้อมูล (โดยนัยจากการใช้ PHP)
 
-## File Structure (Based on index.html)
+## โครงสร้างไฟล์ (อ้างอิงจาก index.html และ page_login.html)
 
-*   **index.html:** The main HTML file for the application.
+*   **index.html:** ไฟล์ HTML หลักสำหรับแอปพลิเคชัน
+*   **page_login.html:** ไฟล์ HTML สำหรับหน้าเข้าสู่ระบบ
 *   **assets/**
     *   **css/**
-        *   app.css: Main application styles.
-        *   bootstrap.min.css: Bootstrap CSS.
-        *   icons.css: Icon styles.
-        *   dark-theme.css: Dark theme styles.
-        *   pace.min.css: Pace.js styles.
+        *   app.css: สไตล์หลักของแอปพลิเคชัน
+        *   bootstrap.min.css: CSS ของ Bootstrap
+        *   icons.css: สไตล์ไอคอน
+        *   dark-theme.css: สไตล์ธีมมืด
+        *   pace.min.css: สไตล์ของ Pace.js
     *   **images/**
-        *   favicon-32x32.png: Favicon.
-        *   logo-icon.png: Logo icon.
-        *   status/: Images for voltage, current, power, and temp.
-        *   users/: User profile images.
+        *   favicon-32x32.png: Favicon
+        *   logo-icon.png: ไอคอนโลโก้
+        *   status/: รูปภาพสำหรับแรงดันไฟฟ้า กระแสไฟฟ้า กำลังไฟฟ้า และอุณหภูมิ
+        *   users/: รูปภาพโปรไฟล์ผู้ใช้
     *   **js/**
-        *   app.js: Main application JavaScript.
-        *   bootstrap.bundle.min.js: Bootstrap JavaScript.
-        *   jquery.min.js: jQuery library.
-        *   pace.min.js: Pace.js library.
-        *   feather-icons.js: Feather Icons library.
-        *   decode.js: (May be custom code for data decoding).
+        *   app.js: JavaScript หลักของแอปพลิเคชัน
+        *   bootstrap.bundle.min.js: JavaScript ของ Bootstrap
+        *   jquery.min.js: ไลบรารี jQuery
+        *   pace.min.js: ไลบรารี Pace.js
+        *   feather-icons.js: ไลบรารี Feather Icons
+        *   decode.js: (อาจเป็นโค้ดที่กำหนดเองสำหรับการถอดรหัสข้อมูล)
     *   **plugins/**
         *   **simplebar/**
-            *   css/simplebar.css: Simplebar styles.
-            *   js/simplebar.min.js: Simplebar library.
+            *   css/simplebar.css: สไตล์ของ Simplebar
+            *   js/simplebar.min.js: ไลบรารี Simplebar
         *   **perfect-scrollbar/**
-            *   css/perfect-scrollbar.css: Perfect-scrollbar styles.
-            *   js/perfect-scrollbar.js: Perfect-scrollbar library.
+            *   css/perfect-scrollbar.css: สไตล์ของ Perfect-scrollbar
+            *   js/perfect-scrollbar.js: ไลบรารี Perfect-scrollbar
         *   **metismenu/**
-            *   css/metisMenu.min.css: MetisMenu styles.
-            *   js/metisMenu.min.js: MetisMenu library.
+            *   css/metisMenu.min.css: สไตล์ของ MetisMenu
+            *   js/metisMenu.min.js: ไลบรารี MetisMenu
         *   **chartjs/**
-            *   js/Chart.min.js: Chart.js library.
+            *   js/Chart.min.js: ไลบรารี Chart.js
         *   **datatable/**
-            *   css/dataTables.bootstrap5.min.css: DataTables styles.
-            *   js/jquery.dataTables.min.js: DataTables library.
-            *   js/dataTables.bootstrap5.min.js: DataTables Bootstrap integration.
+            *   css/dataTables.bootstrap5.min.css: สไตล์ของ DataTables
+            *   js/jquery.dataTables.min.js: ไลบรารี DataTables
+            *   js/dataTables.bootstrap5.min.js: การรวม DataTables กับ Bootstrap
         *   **apexcharts/**
-            *   apexcharts.js: Apexcharts library.
-            *   scripts.js: Apexcharts scripts.
+            *   apexcharts.js: ไลบรารี Apexcharts
+            *   scripts.js: สคริปต์ Apexcharts
         *   **momentjs/**
-            *   moment.min.js: Moment.js library.
+            *   moment.min.js: ไลบรารี Moment.js
         *   **Customizable-Loading-Modal-Plugin/**
-            *   css/modal-loading.css: Loading modal styles.
-            *   js/modal-loading.js: Loading modal library.
+            *   css/modal-loading.css: สไตล์ของโมดัลการโหลด
+            *   js/modal-loading.js: ไลบรารีโมดัลการโหลด
         *   **sweetalert2-7.28.12/**
-            *   dist/sweetalert2.all.min.js: SweetAlert2 library.
+            *   dist/sweetalert2.all.min.js: ไลบรารี SweetAlert2
         *   **echarts.5.4.2/**
-            *   echarts.min.js: ECharts library.
-*   **db/**: (Implied) Contains PHP files for database interaction and server-side logic.
-    *   session.php: Handle user session.
-    *   setting_theme.php: Handle theme setting.
-    *   getData.php: Get data from database.
-    *   getChart.php: Get data for chart.
-    *   getTable.php: Get data for table.
-    *   getTableUsers.php: Get data for user table.
-    *   save_setting.php: Save setting.
-    *   option_user.php: Get option for user.
+            *   echarts.min.js: ไลบรารี ECharts
+*   **db/**: (โดยนัย) ประกอบด้วยไฟล์ PHP สำหรับการโต้ตอบกับฐานข้อมูลและตรรกะฝั่งเซิร์ฟเวอร์
+    *   session.php: จัดการเซสชันผู้ใช้
+    *   setting_theme.php: จัดการการตั้งค่าธีม
+    *   getData.php: รับข้อมูลจากฐานข้อมูล
+    *   getChart.php: รับข้อมูลสำหรับแผนภูมิ
+    *   getTable.php: รับข้อมูลสำหรับตาราง
+    *   getTableUsers.php: รับข้อมูลสำหรับตารางผู้ใช้
+    *   save_setting.php: บันทึกการตั้งค่า
+    *   option_user.php: รับตัวเลือกสำหรับผู้ใช้
 
-## Setup and Installation (General Guidance)
+## การติดตั้งและการตั้งค่า (คำแนะนำทั่วไป)
 
-1.  **Server Environment:** You'll need a web server (e.g., Apache, Nginx) with PHP support and a MySQL database.
-2.  **Database:** Set up a MySQL database and configure the connection details in the PHP files within the `db/` directory.
-3.  **File Placement:** Place the `index.html` file and the `assets/` and `db/` directories in the web server's document root.
-4.  **Dependencies:** Ensure that all the JavaScript and CSS dependencies are correctly placed within the `assets/` directory.
-5.  **Database Setup:** Create the necessary tables in the MySQL database to store user data, site information, meter data, etc.
-6.  **Access:** Access the application through your web browser by navigating to the server's address where you placed the files.
+1.  **สภาพแวดล้อมเซิร์ฟเวอร์:** คุณจะต้องมีเว็บเซิร์ฟเวอร์ (เช่น Apache, Nginx) ที่รองรับ PHP และฐานข้อมูล MySQL
+2.  **ฐานข้อมูล:** ตั้งค่าฐานข้อมูล MySQL และกำหนดรายละเอียดการเชื่อมต่อในไฟล์ PHP ภายในไดเร็กทอรี `db/`
+3.  **การวางไฟล์:** วางไฟล์ `index.html` และ `page_login.html` และไดเร็กทอรี `assets/` และ `db/` ไว้ใน document root ของเว็บเซิร์ฟเวอร์
+4.  **การพึ่งพา:** ตรวจสอบให้แน่ใจว่า JavaScript และ CSS ที่พึ่งพาทั้งหมดถูกวางไว้อย่างถูกต้องภายในไดเร็กทอรี `assets/`
+5.  **การตั้งค่าฐานข้อมูล:** สร้างตารางที่จำเป็นในฐานข้อมูล MySQL เพื่อจัดเก็บข้อมูลผู้ใช้ ข้อมูลไซต์ ข้อมูลมิเตอร์ ฯลฯ
+6.  **การเข้าถึง:** เข้าถึงแอปพลิเคชันผ่านเว็บเบราว์เซอร์ของคุณโดยไปที่ที่อยู่เซิร์ฟเวอร์ที่คุณวางไฟล์ไว้
 
-## Usage
+## การใช้งาน
 
-1.  **Login:** Users will need to log in to access the application.
-2.  **Navigation:** Use the sidebar menu to navigate between different sections (Site, Meter, Dashboard, Setting).
-3.  **Dashboard:** View real-time data on the dashboard.
-4.  **Site/Meter:** Select a site or meter to view detailed information.
-5.  **Charts:** Interact with the charts to view historical data.
-6.  **Reports:** Generate data reports for different timeframes.
-7.  **User Management:** Administrators can manage user accounts.
-8.  **Profile:** Users can manage their own profiles.
-9. **Theme:** User can change theme.
+1.  **เข้าสู่ระบบ (Login):** ผู้ใช้จะต้องเข้าสู่ระบบเพื่อเข้าถึงแอปพลิเคชัน
+2.  **การนำทาง (Navigation):** ใช้เมนูแถบด้านข้างเพื่อนำทางระหว่างส่วนต่างๆ (ไซต์ มิเตอร์ แดชบอร์ด การตั้งค่า)
+3.  **แดชบอร์ด (Dashboard):** ดูข้อมูลแบบเรียลไทม์บนแดชบอร์ด
+4.  **ไซต์/มิเตอร์ (Site/Meter):** เลือกไซต์หรือมิเตอร์เพื่อดูข้อมูลรายละเอียด
+5.  **แผนภูมิ (Charts):** โต้ตอบกับแผนภูมิเพื่อดูข้อมูลย้อนหลัง
+6.  **รายงาน (Reports):** สร้างรายงานข้อมูลสำหรับกรอบเวลาต่างๆ
+7.  **การจัดการผู้ใช้ (User Management):** ผู้ดูแลระบบสามารถจัดการบัญชีผู้ใช้
+8.  **โปรไฟล์ (Profile):** ผู้ใช้สามารถจัดการโปรไฟล์ของตนเอง
+9. **ธีม (Theme):** ผู้ใช้สามารถเปลี่ยนธีมได้
 
-## Future Development
+## การพัฒนาในอนาคต
 
-*   Add more chart types and customization options.
-*   Implement more advanced data analysis features.
-*   Improve the user interface and user experience.
-*   Add more security features.
-*   Add more setting.
+*   เพิ่มประเภทแผนภูมิและตัวเลือกการปรับแต่งเพิ่มเติม
+*   ใช้คุณสมบัติการวิเคราะห์ข้อมูลขั้นสูงเพิ่มเติม
+*   ปรับปรุงส่วนต่อประสานผู้ใช้และประสบการณ์ผู้ใช้
+*   เพิ่มคุณสมบัติความปลอดภัยเพิ่มเติม
+*   เพิ่มการตั้งค่าเพิ่มเติม
 
-## Version
+## เวอร์ชัน
 
-1.0
+1.1
 
-## Author
+## ผู้พัฒนา
 
 Smart Soul PCB
