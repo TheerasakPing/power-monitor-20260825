@@ -2,11 +2,14 @@ name: Security Scan
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
   pull_request:
-    branches: [ "main" ]
+    branches:
+      - main
   schedule:
-    - cron: '30 1 * * 0'  # Weekly scan at 1:30 AM UTC on Sundays
+    - cron: '30 1 * * 0' # Weekly scan at 1:30 AM UTC on Sundays
+  workflow_dispatch: # Allow manual triggering
 
 permissions:
   actions: read
@@ -14,7 +17,7 @@ permissions:
   security-events: write
 
 jobs:
-  analyze:
+  codeql-analysis:
     name: CodeQL Analysis
     runs-on: ubuntu-latest
     permissions:
@@ -25,63 +28,111 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: [ 'javascript' ]
+        language:
+          - javascript
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Required for CodeQL to analyze the entire history
 
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@v2
-      with:
-        languages: ${{ matrix.language }}
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+          # Customize the CodeQL configuration (optional)
+          # config-file: ./.github/codeql/codeql-config.yml
 
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v2
-      with:
-        category: "/language:${{matrix.language}}"
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:${{ matrix.language }}"
+          # Optionally specify a SARIF file name
+          # sarif-file: codeql-results.sarif
+      - name: Upload CodeQL scan results to GitHub
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: /home/runner/work/power-monitor/results/javascript.sarif
+          category: codeql
 
   dependency-review:
     name: Dependency Review
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    if: github.event_name == 'pull_request'
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
-      
+        uses: actions/checkout@v4
+
       - name: Dependency Review
-        uses: actions/dependency-review-action@v3
-        
-  security-scan:
-    name: Security Vulnerabilities Scan
+        uses: actions/dependency-review-action@v4
+        with:
+          # Optional: fail the workflow if vulnerabilities are found
+          # fail-on-severity: high
+          # Optional: specify a path to a custom configuration file
+          # config-file: ./.github/dependency-review-config.yml
+          change-type: all
+
+  snyk-scan:
+    name: Snyk Security Scan
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Run Snyk to check for vulnerabilities
-        uses: snyk/actions/node@master
-        continue-on-error: true # To make sure the workflow continues even if vulnerabilities are found
+        uses: snyk/actions/node@v1
+        continue-on-error: true
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
-          args: --severity-threshold=high
+          args: --severity-threshold=high --sarif-file-output=snyk-results.sarif
+          # Optionally monitor the project
+          # monitor-on-build: true
+      - name: Upload Snyk scan results to GitHub
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: snyk-results.sarif
+          category: snyk
 
-  owasp-scan:
+  owasp-zap-scan:
     name: OWASP ZAP Scan
     runs-on: ubuntu-latest
+    # Only run on pull requests or manual trigger
+    if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
-      
+        uses: actions/checkout@v4
+
       - name: Start application server
         run: |
           npm install
           npm start &
-          sleep 10  # Give the server time to start
+          npx wait-on http://localhost:3000 -t 60000 # Wait for up to 60 seconds for the server to start
         
       - name: OWASP ZAP Full Scan
         uses: zaproxy/action-full-scan@v0.7.0
         with:
-          target: 'http://localhost:3000'  # Update this to match your application URL when running locally
-          fail_action: false  # Don't fail the pipeline on findings, but report them
-          cmd_options: '-a'  # Run active scan with all rules enabled
+          target: 'http://localhost:3000'
+          fail_action: false
+          cmd_options: '-a -r zap-report.html -J zap-report.json' # Generate HTML and JSON reports
+          docker_name: 'ghcr.io/zaproxy/zaproxy:stable' # Use the stable ZAP image
+      - name: Upload ZAP report as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: zap-report
+          path: |
+            zap-report.html
+            zap-report.json
+      - name: Upload ZAP report to GitHub Security
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: zap-report.json
+          category: zap
