@@ -1400,7 +1400,8 @@ function addArray(newData) {
 // ---------------------------
 
 // setting page
-async function getSetting(msg, menu) {
+async function getSetting(menu) {
+  const msg = JSON.parse(sessionStorage.getItem("sessionLog"));
   const account = msg.account;
   const display = msg.display;
   await $("#load_pages").html("");
@@ -1580,13 +1581,8 @@ async function getSetting(msg, menu) {
                                                   <div class="input-group input-group-lg">
                                                       <span class="input-group-text bg-transparent"><i class="bx bx-id-card"></i></span>
                                                       <select class="form-control mode_site" name="mode_site" onchange="loadMeter($(this).val(), logSite)">`;
-                                              for (
-                                                let i = 0;
-                                                i < newLogSite.length;
-                                                i++
-                                              ) {
-                                                const site =
-                                                  newLogSite[i];
+                                              for (let i = 0; i < newLogSite.length; i++) {
+                                                const site = newLogSite[i];
                                                 result += `<option value="${site.siteID}">${site.siteName}</option>`;
                                               }
                                               result += `
@@ -1613,7 +1609,7 @@ async function getSetting(msg, menu) {
                                           <select name="p_status" class="form-control p_status">
                                               <option value="3">User</option>
                                               ${
-                                                account.level == 0
+                                                account.level === 0
                                                   ? '<option value="2">Admin</option><option value="1">Super Admin</option>'
                                                   : ""
                                               }
@@ -1659,12 +1655,11 @@ function loadMeter(siteID, logSite) {
   });
   $(".mode_house").html(result);
 }
-
 // ฟังก์ชันสำหรับดึงข้อมูลผู้ใช้
 function fetchUserData(account, newLogSite) {
   // สมมติว่าเราใช้ AJAX เพื่อดึงข้อมูลจาก API
   let selSite = null;
-  if (display.countSite == 1) {
+  if (display.countSite === 1) {
     selSite = display.select.siteID;
   } else {
     selSite = $("#userSite").val();
@@ -1672,7 +1667,7 @@ function fetchUserData(account, newLogSite) {
   // alert(selSite)
   // return false
   $.ajax({
-    url: "https://iot.smartsoul-pcb.com/db/getTableUsers.php",
+    url: "https://api.smartsoul-pcb.com/powermeter/getTableUsers.php",
     type: "POST",
     data: {
       level: account.level,
@@ -1906,7 +1901,7 @@ function setupEventListeners() {
     }).then((result) => {
       if (result.value) {
         $.ajax({
-          url: "https://iot.smartsoul-pcb.com/db/save_setting.php",
+          url: "https://api.smartsoul-pcb.com/powermeter/save_setting.php",
           type: "POST",
           data: {
             id: userId,
@@ -1962,7 +1957,7 @@ function setupEventListeners() {
                     }).then((result) => {
                       if (result.value) {
                         $.ajax({
-                          url: "db/save_setting.php",
+                          url: "https://api.smartsoul-pcb.com/powermeter/save_setting.php",
                           type: "POST",
                           data: {
                             id: data.user_id,
@@ -2033,6 +2028,7 @@ function setupEventListeners() {
     $(".hid_pass").show();
     $(".lev_us").hide();
     $(".p_id").val("");
+    $(".suspendStatus").hide();
     $("#modal_profile").modal("show");
   });
   // เพิ่มผู้ใช้งาน
@@ -2277,7 +2273,6 @@ function setupEventListeners() {
     }
   });
 }
-
 // // ฟังก์ชันเปลี่ยน active button สำหรับ mode และ time
 function setActiveButton(selector, value) {
   $(selector).each(function () {
