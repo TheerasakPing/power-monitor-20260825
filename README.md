@@ -23,7 +23,7 @@
 *   **การเลือกประเภทข้อมูล (Data Type Selection):** ผู้ใช้สามารถเลือกประเภทข้อมูลที่ต้องการดูได้ เช่น พลังงาน (Energy), แรงดันไฟฟ้า (Voltage), กระแสไฟฟ้า (Current), กำลังไฟฟ้า (Power)
 *   **การเลือกไซต์และบ้าน (Site and House Selection):** ผู้ใช้สามารถเลือกดูข้อมูลของไซต์และบ้านที่ต้องการได้
 *   **การแสดงผลข้อมูลแบบตาราง (Table Data Display):** แสดงข้อมูลในรูปแบบตารางที่สามารถเรียงลำดับและค้นหาได้
-* **การแสดงผลข้อมูลแบบกราฟ (Chart Data Display):** แสดงข้อมูลในรูปแบบกราฟที่สามารถเลือกประเภทข้อมูลและช่วงเวลาได้
+*   **การแสดงผลข้อมูลแบบกราฟ (Chart Data Display):** แสดงข้อมูลในรูปแบบกราฟที่สามารถเลือกประเภทข้อมูลและช่วงเวลาได้
 
 ## เทคโนโลยีที่ใช้ (Technologies Used)
 
@@ -107,6 +107,15 @@
     *   save_setting.php: บันทึกการตั้งค่า
     *   option_user.php: รับตัวเลือกสำหรับผู้ใช้
 * **login.php** : ไฟล์สำหรับเข้าสู่ระบบ
+
+## API Endpoints
+
+### 1. `https://api.smartsoul-pcb.com/powermeter/login.php`
+- **Method:** POST
+- **Description:** User login authentication for the PowerMeter system.
+- **Parameters:**
+  - `name` (string): Username
+  - `pass` (string): Password
 
 ## การติดตั้งและการตั้งค่า (Installation and Setup) (คำแนะนำทั่วไป)
 
