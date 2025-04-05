@@ -53,6 +53,11 @@ jobs:
           category: "/language:${{ matrix.language }}"
           # Optionally specify a SARIF file name
           # sarif-file: codeql-results.sarif
+      - name: Upload CodeQL scan results to GitHub
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: /home/runner/work/power-monitor/results/javascript.sarif
+          category: codeql
 
   dependency-review:
     name: Dependency Review
