@@ -835,11 +835,11 @@
 
         $(document).on("click", ".menu_profile", async function () {
           statusMenu(display, "menu_profile1");
-          await getSetting(msg, $(this).data("type"));
+          await getSetting($(this).data("type"));
           await setupEventListeners();
         });
         $(document).on("click", ".btn-subMenu", function () {
-          getSetting(msg, $(this).data("type"));
+          getSetting($(this).data("type"));
         });
       });
     </script>
