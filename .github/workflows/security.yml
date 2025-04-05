@@ -3,7 +3,7 @@ name: Security Scan
 on:
   push:
     branches: [ "main" ]
-  pull_request:
+  pull_request_target:
     branches: [ "main" ]
   schedule:
     - cron: '30 1 * * 0'  # Weekly scan at 1:30 AM UTC on Sundays
@@ -50,6 +50,11 @@ jobs:
       
       - name: Dependency Review
         uses: actions/dependency-review-action@v3
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          base_ref: ${{ github.event.pull_request.base.ref }}
+          head_ref: ${{ github.event.pull_request.head.ref }}
+
         
   security-scan:
     name: Security Vulnerabilities Scan
