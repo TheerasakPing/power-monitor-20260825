@@ -188,69 +188,59 @@ async function getHouse(data, loadData) {
                         <a href="javaScript:;" class="selectHouse" data-loop-id="${index}">
                             <div class="card radius-10 border-3 border-info card-equal-height mt-2 mb-2">
                                 <div class="card-body d-flex flex-column">
-                                    <div class="col-12"><br>
-                                        <div class="row">
-                                            <div class="col-6 text-center">
-                                                <h4 class="mb-1"><b>${
-                                                  key.house_name
-                                                }</b></h4>
-                                            </div>
-                                            <div class="col-6 text-center">
-                                                <b class="status_${key.house_id}" style="font-size:15px;"></b>
-                                                ${
-                                                  key.house_temp > 0
-                                                    ? `<h6 class="mb-1"> <i class="text-primary" data-feather="thermometer"></i> <b class="t_` +
-                                                      key.house_id +
-                                                      `"></b> °C</h6>`
-                                                    : ""
-                                                }
-                                            </div>
-                                        </div>
-                                    </div><br>
-                                    <table class="display" style="width:100%">
-                                        <thead>
-                                            ${(() => {
-                                              const data = [
-                                                {
-                                                  title: "VOLTAGE",
-                                                  img: "voltage.png",
-                                                  unit: "V",
-                                                  prefix: "v_",
-                                                  phases: ["LN"],
-                                                },
-                                                {
-                                                  title: "CURRENT",
-                                                  img: "current.png",
-                                                  unit: "A",
-                                                  prefix: "c_",
-                                                  phases: ["AVG"],
-                                                },
-                                                {
-                                                  title: "POWER",
-                                                  img: "power.png",
-                                                  unit: "KW",
-                                                  prefix: "atp_",
-                                                  phases: ["Total"],
-                                                },
-                                              ];
-
-                                              return data.map(item => `
-                                                <tr class="mt-5">
-                                                  <td class="text-center">
-                                                    <h6><b>${item.title}</b></h6>
-                                                    <img src="assets/images/status/${item.img}" style="width:50%" alt="">
-                                                    <br><br>
-                                                  </td>
-                                                  ${item.phases.map(phase => `
-                                                    <td class="text-center">
-                                                      <h6><b class="${item.prefix}${phase}_${key.house_id}"></b> ${item.unit}</h6>
-                                                    </td>
-                                                  `).join('')}
-                                                </tr>
-                                              `).join('');
-                                            })()};
-                                        </thead>
-                                    </table>
+                                  <div class="col-12"><br>
+                                      <div class="row">
+                                          <div class="col-6 text-center">
+                                              <h4 class="mb-1"><b>${
+                                                key.house_name
+                                              }</b></h4>
+                                          </div>
+                                          <div class="col-6 text-center">
+                                              <b class="status_${key.house_id}" style="font-size:15px;"></b>
+                                              ${
+                                                key.house_temp > 0
+                                                  ? `<h6 class="mb-1"> <i class="text-primary" data-feather="thermometer"></i> <b class="t_` +
+                                                    key.house_id +
+                                                    `"></b> °C</h6>`
+                                                  : ""
+                                              }
+                                          </div>
+                                      </div>
+                                  </div><br>
+                                  <table class="display" style="width:100%">
+                                      <thead>
+                                        <tr class="mt-5">
+                                            <td class="text-center" width="50%">
+                                                <h6><b>VOLTAGE</b></h6>
+                                                <img src="assets/images/status/voltage.png" style="width:30%" alt="">
+                                                <br><br>
+                                            </td>
+                                            <td class="text-center" width="50%">
+                                                <h5><b class="v_LN_`+ key.house_id+`"></b> V</h5>
+                                            </td>
+                                        </tr>
+                                        <tr class="mt-5">
+                                            <td class="text-center" width="50%">
+                                                <h6><b>CURRENT</b></h6>
+                                                <img src="assets/images/status/current.png" style="width:30%" alt="">
+                                                <br><br>
+                                            </td>
+                                            <td class="text-center" width="50%">
+                                                <h5><b class="c_AVG_` + key.house_id+`"></b> A</h5>
+                                            </td>
+                                        </tr>
+                                        <tr class="mt-5">
+                                            <td class="text-center" width="50%">
+                                                <h6><b>POWER</b></h6>
+                                                <img src="assets/images/status/power.png" style="width:30%" alt="">
+                                                <br><br>
+                                            </td>
+                                            <td class="text-center" width="50%">
+                                                <h5><b class="atp_Total_`+ key.house_id+`"></b> A</h5>
+                                            </td>
+                                        </tr>
+                                      </thead>
+                                  </table>
                                 </div>
                             </div>
                         </a>
@@ -1247,8 +1237,8 @@ async function startRealtime(val, Dashselect) {
     // setTimeout(() => {
         updateSensorValues(newData, Dashselect);
     //     console.log('22');
-    // }, 300);
-     
+    // }, 300); 
+
     stopRealtime("loadData");
     realtimeInterLoadData = setInterval(async () => {
       newData = await loadData(val);
