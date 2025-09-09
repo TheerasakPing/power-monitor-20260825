@@ -210,40 +210,45 @@ async function getHouse(data, loadData) {
                                     <table class="display" style="width:100%">
                                         <thead>
                                             ${(() => {
-                                              let result = "",
-                                                imgs = "",
-                                                ph = "",
-                                                unit = "";
-                                              for (let i = 1; i < 4; i++) {
-                                                if (i == 1) {
-                                                  ph = "v_LN_" + key.house_id;
-                                                  unit = "V";
-                                                  imgs = `<h6><b>VOLTAGE</b></h6>
-                                                        <img src="assets/images/status/voltage.png" style="width:50%" alt="">`;
-                                                } else if (i == 2) {
-                                                  ph = "c_AVG_" + key.house_id;
-                                                  unit = "A";
-                                                  imgs = `<h6><b>CURRENT</b></h6>
-                                                        <img src="assets/images/status/current.png" style="width:50%" alt="">`;
-                                                } else if (i == 3) {
-                                                  ph =
-                                                    "atp_Total_" + key.house_id;
-                                                  unit = "Kw";
-                                                  imgs = `<h6><b>POWER</b></h6>
-                                                        <img src="assets/images/status/power.png" style="width:50%" alt="">`;
-                                                }
-                                                result += `
-                                                    <tr class="mt-5">
-                                                        <td class="text-center" width="50%">
-                                                            ${imgs}<br><br>
-                                                        </td>
-                                                        <td class="text-center" width="50%">
-                                                            <h6><b class="${ph}"></b> A</h6>
-                                                        </td>
-                                                    </tr>`;
-                                              }
-                                              return result;
-                                            })()}
+                                              const data = [
+                                                {
+                                                  title: "VOLTAGE",
+                                                  img: "voltage.png",
+                                                  unit: "V",
+                                                  prefix: "v_",
+                                                  phases: ["LN"],
+                                                },
+                                                {
+                                                  title: "CURRENT",
+                                                  img: "current.png",
+                                                  unit: "A",
+                                                  prefix: "c_",
+                                                  phases: ["AVG"],
+                                                },
+                                                {
+                                                  title: "POWER",
+                                                  img: "power.png",
+                                                  unit: "KW",
+                                                  prefix: "atp_",
+                                                  phases: ["Total"],
+                                                },
+                                              ];
+
+                                              return data.map(item => `
+                                                <tr class="mt-5">
+                                                  <td class="text-center">
+                                                    <h6><b>${item.title}</b></h6>
+                                                    <img src="assets/images/status/${item.img}" style="width:50%" alt="">
+                                                    <br><br>
+                                                  </td>
+                                                  ${item.phases.map(phase => `
+                                                    <td class="text-center">
+                                                      <h6><b class="${item.prefix}${phase}_${key.house_id}"></b> ${item.unit}</h6>
+                                                    </td>
+                                                  `).join('')}
+                                                </tr>
+                                              `).join('');
+                                            })()};
                                         </thead>
                                     </table>
                                 </div>
