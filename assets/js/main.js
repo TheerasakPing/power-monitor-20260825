@@ -11,6 +11,9 @@
 //     throw error;
 //   }
 // }
+
+let partURL = "api/"; //"https://api.smartsoul-pcb.com/powermeter/";
+
 function toggleTheme(val) {
   // alert(val)
   if (val === true) {
@@ -24,7 +27,7 @@ function toggleTheme(val) {
   parse.theme = theme;
   sessionStorage.setItem("sessionLog", JSON.stringify(parse));
   $.ajax({
-    url: "https://api.smartsoul-pcb.com/powermeter/setting_theme.php", // "https://powermeter.smartsoul-pcb.com/db/setting_theme.php",
+    url: partURL+"setting_theme.php", // "https://powermeter.smartsoul-pcb.com/db/setting_theme.php",
     method: "post",
     data: {
       theme: theme,
@@ -77,6 +80,7 @@ function countPhaseWithJquery(data, name, number) {
 async function getHouse(data, loadData) {
   await $("#load_pages").html("");
   await $("#load_pages").empty();
+  // console.log("getHouse");
   // console.log(data);
 
   const rowDiv = $("<div>", {
@@ -84,11 +88,12 @@ async function getHouse(data, loadData) {
   });
   const dataLength = data.length;
   const phase3Length = countPhaseWithJquery(data, "house_phase", 3);
+  
   // alert(phase3Length)
   $.each(data, function (index, key) {
     // console.log(key);
     const cardHtmlBig3 = `
-                    <div class="col-12 col-lg-6 col-md-3">
+                    <div class="col-12 col-lg-3 col-md-3">
                         <a href="javaScript:;" class="selectHouse" data-loop-id="${index}">
                             <div class="card radius-10 border-3 border-info card-equal-height mt-2 mb-2">
                                 <div class="card-body d-flex flex-column">
@@ -120,54 +125,57 @@ async function getHouse(data, loadData) {
                                             <tr class="mt-5">
                                                 <td class="text-center"> </td>
                                                 <td class="text-center">
-                                                    <h5><b>Phase A</b></h5>
+                                                    <h6><b>Phase A</b></h6
                                                 </td>
                                                 <td class="text-center">
-                                                    <h5><b>Phase B</b></h5>
+                                                    <h6><b>Phase B</b></h6>
                                                 </td>
                                                 <td class="text-center">
-                                                    <h5><b>Phase C</b></h5>
+                                                    <h6><b>Phase C</b></h6>
                                                 </td>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             ${(() => {
-                                              let result = "",
-                                                imgs = "",
-                                                ph = "";
-                                              for (let i = 1; i < 4; i++) {
-                                                if (i == 1) {
-                                                  ph = "A";
-                                                  imgs = `<h6><b>VOLTAGE</b></h6>
-                                                            <img src="assets/images/status/voltage.png" style="width:30%" alt="">`;
-                                                } else if (i == 2) {
-                                                  ph = "B";
-                                                  imgs = `<h6><b>CURRENT</b></h6>
-                                                            <img src="assets/images/status/current.png" style="width:30%" alt="">`;
-                                                } else if (i == 3) {
-                                                  ph = "C";
-                                                  imgs = `<h6><b>POWER</b></h6>
-                                                            <img src="assets/images/status/power.png" style="width:30%" alt="">`;
-                                                }
-                                                // else { phase = 'Average'; ph = 'L'; }
-                                                result += `
-                                                        <tr class="mt-5">
-                                                            <td class="text-center">
-                                                                ${imgs}<br><br>
-                                                            </td>
-                                                            <td class="text-center">
-                                                                <h6><b class="v_${ph}N_${key.house_id}"></b> V</h6>
-                                                            </td>
-                                                            <td class="text-center">
-                                                                <h6><b class="c_${ph}_${key.house_id}"></b> A</h6>
-                                                            </td>
-                                                            <td class="text-center">
-                                                                <h6><b class="atp_${ph}_${key.house_id}"></b> KW</h6>
-                                                            </td>
-                                                        </tr>`;
-                                              }
-                                              return result;
-                                            })()}
+                                              const data = [
+                                                {
+                                                  title: "VOLTAGE",
+                                                  img: "voltage.png",
+                                                  unit: "V",
+                                                  prefix: "v_",
+                                                  phases: ["AN", "BN", "CN"],
+                                                },
+                                                {
+                                                  title: "CURRENT",
+                                                  img: "current.png",
+                                                  unit: "A",
+                                                  prefix: "c_",
+                                                  phases: ["A", "B", "C"],
+                                                },
+                                                {
+                                                  title: "POWER",
+                                                  img: "power.png",
+                                                  unit: "KW",
+                                                  prefix: "atp_",
+                                                  phases: ["A", "B", "C"],
+                                                },
+                                              ];
+
+                                              return data.map(item => `
+                                                <tr class="mt-5">
+                                                  <td class="text-center">
+                                                    <h6><b>${item.title}</b></h6>
+                                                    <img src="assets/images/status/${item.img}" style="width:30%" alt="">
+                                                    <br><br>
+                                                  </td>
+                                                  ${item.phases.map(phase => `
+                                                    <td class="text-center">
+                                                      <h6><b class="${item.prefix}${phase}_${key.house_id}"></b> ${item.unit}</h6>
+                                                    </td>
+                                                  `).join('')}
+                                                </tr>
+                                              `).join('');
+                                            })()};
                                         </tbody>
                                     </table>
                                 </div>
@@ -188,9 +196,7 @@ async function getHouse(data, loadData) {
                                                 }</b></h4>
                                             </div>
                                             <div class="col-6 text-center">
-                                                <b class="status_${
-                                                  key.house_id
-                                                }" style="font-size:15px;"></b>
+                                                <b class="status_${key.house_id}" style="font-size:15px;"></b>
                                                 ${
                                                   key.house_temp > 0
                                                     ? `<h6 class="mb-1"> <i class="text-primary" data-feather="thermometer"></i> <b class="t_` +
@@ -280,27 +286,21 @@ async function getHouse(data, loadData) {
                                                     <h5 class="mb-1"><b>VOLTAGE</b></h5>
                                                     <img src="assets/images/status/voltage.png" style="width:80%" alt="">
                                                     <br>
-                                                    <b class="mb-1 v_LN_${
-                                                      key.house_id
-                                                    }" style="font-size:25px; color:#f25a02"></b>
+                                                    <b class="mb-1 v_LN_${key.house_id}" style="font-size:25px; color:#f25a02"></b>
                                                     <b class="mb-0 text-secondary font-20">V</b>
                                                 </div>
                                                 <div class="col-4 text-center">
                                                     <h5 class="mb-1"><b>CURRENT</b></h5>
                                                     <img src="assets/images/status/current.png" style="width:80%" alt="">
                                                     <br>
-                                                    <b class="mb-1 c_AVG_${
-                                                      key.house_id
-                                                    }" style="font-size:25px; color:#f25a02"></b>
+                                                    <b class="mb-1 c_AVG_${key.house_id}" style="font-size:25px; color:#f25a02"></b>
                                                     <b class="mb-0 text-secondary font-20">A</b>
                                                 </div>
                                                 <div class="col-4 text-center">
                                                     <h5 class="mb-1"><b>POWER</b></h5>
                                                     <img src="assets/images/status/power.png" style="width:80%" alt="">
                                                     <br>
-                                                    <b class="mb-1 atp_Total_${
-                                                      key.house_id
-                                                    }" style="font-size:25px; color:#f25a02"></b>
+                                                    <b class="mb-1 atp_Total_${key.house_id}" style="font-size:25px; color:#f25a02"></b>
                                                     <b class="mb-0 text-secondary font-20">KW</b>
                                                 </div>
                                             </div>
@@ -313,7 +313,7 @@ async function getHouse(data, loadData) {
                 `;
     if (phase3Length === 0) {
       rowDiv.append(cardHtmlsmall);
-    } else {console.log(key.house_phase);
+    } else {//console.log(key.house_phase);
     
       if (index === 0) {
         if (key.house_phase === 3) {
@@ -331,6 +331,14 @@ async function getHouse(data, loadData) {
           }
         }
       } else if (dataLength === 3) {
+        if (index > 0) {
+          if (key.house_phase === 3) {
+            rowDiv.append(cardHtmlBig3);
+          } else {
+            rowDiv.append(cardHtmlBig1);
+          }
+        }
+      } else if (dataLength > 3) {
         if (index > 0) {
           if (key.house_phase === 3) {
             rowDiv.append(cardHtmlBig3);
@@ -1031,7 +1039,7 @@ async function mainPage(msg){
     display = msg.display;
     logSite = display.logSite;
     select = display.select;
-    // console.log(select.loop);
+    // console.log(select);
     
     // loadingOut(loading);
     if (account.level < 3) {
@@ -1052,8 +1060,9 @@ async function mainPage(msg){
     } 
     else {
       const groupSite = groupBySite(logSite);
+      // console.log(logSite);
       // console.log(groupSite);
-      // console.log(select.loop);
+      // console.log(select);
       
       
       $.each(groupSite[select.loop].houses, function (index, key) {
@@ -1064,15 +1073,18 @@ async function mainPage(msg){
           phase: key.house_phase,
         });
       });
+      // console.log(loadDataHouse);
+      
       statusMenu(display, "", loadDataHouse.length);
       if (display.select.houseID === "") {
         getHouse(groupSite[display.select.loop].houses, loadDataHouse);
-        await startRealtime(loadDataHouse);
+        startRealtime(loadDataHouse, display.select);
+        // alert('a')
       } else {
         // return false
         await dashboard(display.select, loadDataHouse);
         // console.log(loadDataHouse);
-        await startRealtime(loadDataHouse);
+        await startRealtime(loadDataHouse, display.select);
 
         const masterData = await getDataChart(select);
         // console.log(masterData);
@@ -1085,7 +1097,7 @@ async function mainPage(msg){
   }
 }
 
-function updateSensorValues(data) {
+function updateSensorValues(data, Dashselect) {
   for (var i = 0; i < data.length - 1; i++) {
     // console.log(data[i]);
     // console.log(res[i-1]['v_AN_'.house_id+'_'+i]+" ++ "+(count(res) - 1));
@@ -1160,15 +1172,39 @@ function updateSensorValues(data) {
           .html("OFFLINE");
       }
     }
+    // console.log(Dashselect['sn']);
+    
     if ($(".memu_dash").hasClass("mm-active") === true) {
-      if (
-        data[i].date.substring(0, data[i].date.length - 3) >=
-        data[data.length - 1]
-      ) {
-        // ONLINE
-        if (data[i].siteID === 5) {
-          // หอโหวด 1 master หลาย meter
-          if (data[i].v_LN > 0) {
+      if(Dashselect['sn'] === data[i].sn){
+        if (
+          data[i].date.substring(0, data[i].date.length - 3) >=
+          data[data.length - 1]
+        ) {
+          // ONLINE
+          if (data[i].siteID === 5) {
+            // หอโหวด 1 master หลาย meter
+            if (data[i].v_LN > 0) {
+              $(".bar_name")
+                .show()
+                .removeClass("text-danger")
+                .addClass("text-success")
+                .html(
+                  moment(data[i].date, "YYYY/MM/DD - HH:mm:ss").format(
+                    "HH:mm, DD MMM YYYY"
+                  )
+                );
+            } else {
+              $(".bar_name")
+                .show()
+                .removeClass("text-success")
+                .addClass("text-danger")
+                .html(
+                  moment(data[i].date, "YYYY/MM/DD - HH:mm:ss").format(
+                    "HH:mm, DD MMM YYYY"
+                  )
+                );
+            }
+          } else {
             $(".bar_name")
               .show()
               .removeClass("text-danger")
@@ -1178,38 +1214,18 @@ function updateSensorValues(data) {
                   "HH:mm, DD MMM YYYY"
                 )
               );
-          } else {
-            $(".bar_name")
-              .show()
-              .removeClass("text-success")
-              .addClass("text-danger")
-              .html(
-                moment(data[i].date, "YYYY/MM/DD - HH:mm:ss").format(
-                  "HH:mm, DD MMM YYYY"
-                )
-              );
           }
         } else {
           $(".bar_name")
             .show()
-            .removeClass("text-danger")
-            .addClass("text-success")
+            .removeClass("text-success")
+            .addClass("text-danger")
             .html(
               moment(data[i].date, "YYYY/MM/DD - HH:mm:ss").format(
                 "HH:mm, DD MMM YYYY"
               )
-            );
+            ); //data[i].date.substring(0,data[i].date.length-3)+' '+moment( new Date( data[i].date.substring(0,data[i].date.length-11) ) ).format('DD MMM YYYY'))
         }
-      } else {
-        $(".bar_name")
-          .show()
-          .removeClass("text-success")
-          .addClass("text-danger")
-          .html(
-            moment(data[i].date, "YYYY/MM/DD - HH:mm:ss").format(
-              "HH:mm, DD MMM YYYY"
-            )
-          ); //data[i].date.substring(0,data[i].date.length-3)+' '+moment( new Date( data[i].date.substring(0,data[i].date.length-11) ) ).format('DD MMM YYYY'))
       }
     } else {
       $(".bar_name").hide();
@@ -1217,22 +1233,28 @@ function updateSensorValues(data) {
     feather.replace();
   }
 }
-async function startRealtime(val) {
+async function startRealtime(val, Dashselect) {
   try {
-    let newData = await loadData(val);
+    showLoading();
+    let newData = await loadData(val, Dashselect);
     // console.log(newData);
-
-    await updateSensorValues(newData);
-
+    // console.log(Dashselect);
+    // setTimeout(() => {
+        updateSensorValues(newData, Dashselect);
+    //     console.log('22');
+    // }, 300);
+     
     stopRealtime("loadData");
     realtimeInterLoadData = setInterval(async () => {
       newData = await loadData(val);
       // console.log(newData);
-      updateSensorValues(newData);
+      updateSensorValues(newData, Dashselect);
       addArray(newData);
     }, 60000);
   } catch (error) {
     console.error("Error:", error);
+  } finally {
+    hideLoading();
   }
 }
 function stopRealtime(mode) {
@@ -1257,7 +1279,7 @@ function loadData(val) {
   try {
     const newData = $.ajax({
       type: "POST",
-      url: "https://api.smartsoul-pcb.com/powermeter/getData.php",
+      url: partURL+"getData.php",
       data: {
         val: val,
       },
@@ -1398,7 +1420,17 @@ function addArray(newData) {
   // console.log({time: moment(newData[0].date.slice(0, 18), 'YYYY/MM/dd - HH:mm').unix()});
 }
 // ---------------------------
+function showLoading() {
+  // สร้างฟังก์ชันเพื่อแสดง loading
+  // ตัวอย่าง: เพิ่ม class 'active' ให้กับ element ที่มี loading icon
+  $('#loading-overlay').addClass('active');
+}
 
+function hideLoading() {
+  // สร้างฟังก์ชันเพื่อซ่อน loading
+  // ตัวอย่าง: ลบ class 'active' ออกจาก element
+  $('#loading-overlay').removeClass('active');
+}
 // setting page
 async function getSetting(menu) {
   const msg = JSON.parse(sessionStorage.getItem("sessionLog"));
@@ -1667,7 +1699,7 @@ function fetchUserData(account, newLogSite) {
   // alert(selSite)
   // return false
   $.ajax({
-    url: "https://api.smartsoul-pcb.com/powermeter/getTableUsers.php",
+    url: partURL+"getTableUsers.php",
     type: "POST",
     data: {
       level: account.level,
@@ -1901,7 +1933,7 @@ function setupEventListeners() {
     }).then((result) => {
       if (result.value) {
         $.ajax({
-          url: "https://api.smartsoul-pcb.com/powermeter/save_setting.php",
+          url: partURL+"save_setting.php",
           type: "POST",
           data: {
             id: userId,
@@ -1957,7 +1989,7 @@ function setupEventListeners() {
                     }).then((result) => {
                       if (result.value) {
                         $.ajax({
-                          url: "https://api.smartsoul-pcb.com/powermeter/save_setting.php",
+                          url: partURL+"save_setting.php",
                           type: "POST",
                           data: {
                             id: data.user_id,
@@ -2321,7 +2353,7 @@ async function getDataTable(select) {
     // }
     const masterData = await $.ajax({
       type: "POST",
-      url: "https://api.smartsoul-pcb.com/powermeter/getTable.php",
+      url: partURL+"getTable.php",
       data: val,
       dataType: "json",
     });
@@ -2553,7 +2585,7 @@ async function getDataChart(select) {
     // }
     const masterData = await $.ajax({
       type: "POST",
-      url: "https://api.smartsoul-pcb.com/powermeter/getChart.php",
+      url: partURL+"getChart.php",
       data: val,
       dataType: "json",
     });
