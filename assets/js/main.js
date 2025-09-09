@@ -12,7 +12,7 @@
 //   }
 // }
 
-let partURL = "api/"; //"https://api.smartsoul-pcb.com/powermeter/";
+let partURL = "https://api.smartsoul-pcb.com/powermeter/";
 
 function toggleTheme(val) {
   // alert(val)
