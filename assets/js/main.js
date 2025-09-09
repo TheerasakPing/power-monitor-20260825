@@ -3178,7 +3178,7 @@ function formatDate(timestamp, isEnergy) {
   const hour = date.getHours().toString().padStart(2, "0");
   if (isEnergy) {
     // Format "YYYY/MM/dd HH"
-    return `${year}/${month}/${day} ${hour}`;
+    return `${year}/${month}/${day} ${hour}:00`;
   } else {
     const minute = date.getMinutes().toString().padStart(2, "0");
     // Format "YYYY/MM/dd HH:mm"
