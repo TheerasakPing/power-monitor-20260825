@@ -12,7 +12,7 @@
 //   }
 // }
 
-let partURL = "https://api.smartsoul-pcb.com/powermeter/"; 
+let partURL = "api/"; //"https://api.smartsoul-pcb.com/powermeter/";
 
 function toggleTheme(val) {
   // alert(val)
@@ -188,59 +188,64 @@ async function getHouse(data, loadData) {
                         <a href="javaScript:;" class="selectHouse" data-loop-id="${index}">
                             <div class="card radius-10 border-3 border-info card-equal-height mt-2 mb-2">
                                 <div class="card-body d-flex flex-column">
-                                  <div class="col-12"><br>
-                                      <div class="row">
-                                          <div class="col-6 text-center">
-                                              <h4 class="mb-1"><b>${
-                                                key.house_name
-                                              }</b></h4>
-                                          </div>
-                                          <div class="col-6 text-center">
-                                              <b class="status_${key.house_id}" style="font-size:15px;"></b>
-                                              ${
-                                                key.house_temp > 0
-                                                  ? `<h6 class="mb-1"> <i class="text-primary" data-feather="thermometer"></i> <b class="t_` +
-                                                    key.house_id +
-                                                    `"></b> °C</h6>`
-                                                  : ""
+                                    <div class="col-12"><br>
+                                        <div class="row">
+                                            <div class="col-6 text-center">
+                                                <h4 class="mb-1"><b>${
+                                                  key.house_name
+                                                }</b></h4>
+                                            </div>
+                                            <div class="col-6 text-center">
+                                                <b class="status_${key.house_id}" style="font-size:15px;"></b>
+                                                ${
+                                                  key.house_temp > 0
+                                                    ? `<h6 class="mb-1"> <i class="text-primary" data-feather="thermometer"></i> <b class="t_` +
+                                                      key.house_id +
+                                                      `"></b> °C</h6>`
+                                                    : ""
+                                                }
+                                            </div>
+                                        </div>
+                                    </div><br>
+                                    <table class="display" style="width:100%">
+                                        <thead>
+                                            ${(() => {
+                                              let result = "",
+                                                imgs = "",
+                                                ph = "",
+                                                unit = "";
+                                              for (let i = 1; i < 4; i++) {
+                                                if (i == 1) {
+                                                  ph = "v_LN_" + key.house_id;
+                                                  unit = "V";
+                                                  imgs = `<h6><b>VOLTAGE</b></h6>
+                                                        <img src="assets/images/status/voltage.png" style="width:50%" alt="">`;
+                                                } else if (i == 2) {
+                                                  ph = "c_AVG_" + key.house_id;
+                                                  unit = "A";
+                                                  imgs = `<h6><b>CURRENT</b></h6>
+                                                        <img src="assets/images/status/current.png" style="width:50%" alt="">`;
+                                                } else if (i == 3) {
+                                                  ph =
+                                                    "atp_Total_" + key.house_id;
+                                                  unit = "Kw";
+                                                  imgs = `<h6><b>POWER</b></h6>
+                                                        <img src="assets/images/status/power.png" style="width:50%" alt="">`;
+                                                }
+                                                result += `
+                                                    <tr class="mt-5">
+                                                        <td class="text-center" width="50%">
+                                                            ${imgs}<br><br>
+                                                        </td>
+                                                        <td class="text-center" width="50%">
+                                                            <h6><b class="${ph}"></b> A</h6>
+                                                        </td>
+                                                    </tr>`;
                                               }
-                                          </div>
-                                      </div>
-                                  </div><br>
-                                  <table class="display" style="width:100%">
-                                      <thead>
-                                        <tr class="mt-5">
-                                            <td class="text-center" width="50%">
-                                                <h6><b>VOLTAGE</b></h6>
-                                                <img src="assets/images/status/voltage.png" style="width:30%" alt="">
-                                                <br><br>
-                                            </td>
-                                            <td class="text-center" width="50%">
-                                                <h5><b class="v_LN_`+ key.house_id+`"></b> V</h5>
-                                            </td>
-                                        </tr>
-                                        <tr class="mt-5">
-                                            <td class="text-center" width="50%">
-                                                <h6><b>CURRENT</b></h6>
-                                                <img src="assets/images/status/current.png" style="width:30%" alt="">
-                                                <br><br>
-                                            </td>
-                                            <td class="text-center" width="50%">
-                                                <h5><b class="c_AVG_` + key.house_id+`"></b> A</h5>
-                                            </td>
-                                        </tr>
-                                        <tr class="mt-5">
-                                            <td class="text-center" width="50%">
-                                                <h6><b>POWER</b></h6>
-                                                <img src="assets/images/status/power.png" style="width:30%" alt="">
-                                                <br><br>
-                                            </td>
-                                            <td class="text-center" width="50%">
-                                                <h5><b class="atp_Total_`+ key.house_id+`"></b> A</h5>
-                                            </td>
-                                        </tr>
-                                      </thead>
-                                  </table>
+                                              return result;
+                                            })()}
+                                        </thead>
+                                    </table>
                                 </div>
                             </div>
                         </a>
@@ -1233,12 +1238,12 @@ async function startRealtime(val, Dashselect) {
     showLoading();
     let newData = await loadData(val, Dashselect);
     // console.log(newData);
-    // console.log(Dashselect);
+    // console.log(Dashselect.phase);
     // setTimeout(() => {
         updateSensorValues(newData, Dashselect);
     //     console.log('22');
-    // }, 300); 
-
+    // }, 300);
+     
     stopRealtime("loadData");
     realtimeInterLoadData = setInterval(async () => {
       newData = await loadData(val);
@@ -2486,19 +2491,27 @@ function renderTable(masterData, mode) {
     window.realtimeInterTable = setInterval(function () {
       let updatedData = [];
       if (realtimeDataTable !== null) {
-        realtimeDataTable.forEach((row) => {
-          const minuteKey = row[0];
-          const ts = formatDate(minuteKey * 1000);
-          updatedData.push([
-            ts,
-            ts.slice(0, 10),
-            ts.slice(11, 16),
-            ...row.slice(1),
-          ]);
-        });
-        table.clear().rows.add(updatedData).draw();
-        // บังคับให้ซ่อน column 0 หลังจากการ update
-        table.column(0).visible(false);
+          // console.log(realtimeDataTable[realtimeDataTable.length-1]);
+          // console.log(realtimeDataTable[realtimeDataTable.length-1].length-2)
+        if(
+          realtimeDataTable[realtimeDataTable.length-1][realtimeDataTable[realtimeDataTable.length-1].length-2] != 0 &&
+          realtimeDataTable[realtimeDataTable.length-1][realtimeDataTable[realtimeDataTable.length-1].length-3] != 0
+        ){
+          realtimeDataTable.forEach((row) => {
+            const minuteKey = row[0];
+            
+            const ts = formatDate(minuteKey * 1000);
+            updatedData.push([
+              ts,
+              ts.slice(0, 10),
+              ts.slice(11, 16),
+              ...row.slice(1),
+            ]);
+          });
+          table.clear().rows.add(updatedData).draw();
+          // บังคับให้ซ่อน column 0 หลังจากการ update
+          table.column(0).visible(false);
+        }
       }
     }, 30000);
   }
