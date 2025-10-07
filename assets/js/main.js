@@ -13,6 +13,9 @@
 // }
 
 let partURL = "https://api.smartsoul-pcb.com/powermeter/";
+// let partURL = "https://192.168.1.194/powermeter/api/";
+// let partURL = "api/";
+
 
 function toggleTheme(val) {
   // alert(val)
@@ -80,7 +83,6 @@ function countPhaseWithJquery(data, name, number) {
 async function getHouse(data, loadData) {
   await $("#load_pages").html("");
   await $("#load_pages").empty();
-  // console.log("getHouse");
   // console.log(data);
 
   const rowDiv = $("<div>", {
@@ -88,12 +90,11 @@ async function getHouse(data, loadData) {
   });
   const dataLength = data.length;
   const phase3Length = countPhaseWithJquery(data, "house_phase", 3);
-  
   // alert(phase3Length)
   $.each(data, function (index, key) {
     // console.log(key);
     const cardHtmlBig3 = `
-                    <div class="col-12 col-lg-3 col-md-3">
+                    <div class="col-12 col-lg-6 col-md-3">
                         <a href="javaScript:;" class="selectHouse" data-loop-id="${index}">
                             <div class="card radius-10 border-3 border-info card-equal-height mt-2 mb-2">
                                 <div class="card-body d-flex flex-column">
@@ -125,57 +126,54 @@ async function getHouse(data, loadData) {
                                             <tr class="mt-5">
                                                 <td class="text-center"> </td>
                                                 <td class="text-center">
-                                                    <h6><b>Phase A</b></h6
+                                                    <h5><b>Phase A</b></h5>
                                                 </td>
                                                 <td class="text-center">
-                                                    <h6><b>Phase B</b></h6>
+                                                    <h5><b>Phase B</b></h5>
                                                 </td>
                                                 <td class="text-center">
-                                                    <h6><b>Phase C</b></h6>
+                                                    <h5><b>Phase C</b></h5>
                                                 </td>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             ${(() => {
-                                              const data = [
-                                                {
-                                                  title: "VOLTAGE",
-                                                  img: "voltage.png",
-                                                  unit: "V",
-                                                  prefix: "v_",
-                                                  phases: ["AN", "BN", "CN"],
-                                                },
-                                                {
-                                                  title: "CURRENT",
-                                                  img: "current.png",
-                                                  unit: "A",
-                                                  prefix: "c_",
-                                                  phases: ["A", "B", "C"],
-                                                },
-                                                {
-                                                  title: "POWER",
-                                                  img: "power.png",
-                                                  unit: "KW",
-                                                  prefix: "atp_",
-                                                  phases: ["A", "B", "C"],
-                                                },
-                                              ];
-
-                                              return data.map(item => `
-                                                <tr class="mt-5">
-                                                  <td class="text-center">
-                                                    <h6><b>${item.title}</b></h6>
-                                                    <img src="assets/images/status/${item.img}" style="width:30%" alt="">
-                                                    <br><br>
-                                                  </td>
-                                                  ${item.phases.map(phase => `
-                                                    <td class="text-center">
-                                                      <h6><b class="${item.prefix}${phase}_${key.house_id}"></b> ${item.unit}</h6>
-                                                    </td>
-                                                  `).join('')}
-                                                </tr>
-                                              `).join('');
-                                            })()};
+                                              let result = "",
+                                                imgs = "",
+                                                ph = "";
+                                              for (let i = 1; i < 4; i++) {
+                                                if (i == 1) {
+                                                  ph = "A";
+                                                  imgs = `<h6><b>VOLTAGE</b></h6>
+                                                            <img src="assets/images/status/voltage.png" style="width:30%" alt="">`;
+                                                } else if (i == 2) {
+                                                  ph = "B";
+                                                  imgs = `<h6><b>CURRENT</b></h6>
+                                                            <img src="assets/images/status/current.png" style="width:30%" alt="">`;
+                                                } else if (i == 3) {
+                                                  ph = "C";
+                                                  imgs = `<h6><b>POWER</b></h6>
+                                                            <img src="assets/images/status/power.png" style="width:30%" alt="">`;
+                                                }
+                                                // else { phase = 'Average'; ph = 'L'; }
+                                                result += `
+                                                        <tr class="mt-5">
+                                                            <td class="text-center">
+                                                                ${imgs}<br><br>
+                                                            </td>
+                                                            <td class="text-center">
+                                                                <h6><b class="v_${ph}N_${key.house_id}"></b> V</h6>
+                                                            </td>
+                                                            <td class="text-center">
+                                                                <h6><b class="c_${ph}_${key.house_id}"></b> A</h6>
+                                                            </td>
+                                                            <td class="text-center">
+                                                                <h6><b class="atp_${ph}_${key.house_id}"></b> KW</h6>
+                                                            </td>
+                                                        </tr>`;
+                                              }
+                                              return result;
+                                            })()}
                                         </tbody>
                                     </table>
                                 </div>
@@ -313,7 +311,7 @@ async function getHouse(data, loadData) {
                 `;
     if (phase3Length === 0) {
       rowDiv.append(cardHtmlsmall);
-    } else {//console.log(key.house_phase);
+    } else {console.log(key.house_phase);
     
       if (index === 0) {
         if (key.house_phase === 3) {
@@ -331,14 +329,6 @@ async function getHouse(data, loadData) {
           }
         }
       } else if (dataLength === 3) {
-        if (index > 0) {
-          if (key.house_phase === 3) {
-            rowDiv.append(cardHtmlBig3);
-          } else {
-            rowDiv.append(cardHtmlBig1);
-          }
-        }
-      } else if (dataLength > 3) {
         if (index > 0) {
           if (key.house_phase === 3) {
             rowDiv.append(cardHtmlBig3);
@@ -456,6 +446,7 @@ function statusMenu(display, mode, lengthSite) {
       }
       $(".memu_dash").removeClass("mm-active");
       $(".bar_name").hide();
+      $(".bar_name2").hide();
     }
     if (mode === "selectSite") {
       $(".memu_site").removeClass("mm-active");
@@ -474,11 +465,13 @@ function statusMenu(display, mode, lengthSite) {
         }
       }
       $(".bar_name").hide();
+      $(".bar_name2").hide();
     }
     if (mode === "memu_meter") {
       $(".memu_site").removeClass("mm-active");
       $(".memu_dash").removeClass("mm-active");
       $(".bar_name").hide();
+      $(".bar_name2").hide();
     }
     if (mode === "memu_dash") {
       $(".memu_site").removeClass("mm-active");
@@ -494,6 +487,7 @@ function statusMenu(display, mode, lengthSite) {
       $(".memu_dash").removeClass("mm-active");
       $(".memu_dashsetting").show().addClass("mm-active");
       $(".bar_name ").hide();
+      $(".bar_name2").hide();
     }
   }
 }
@@ -1039,7 +1033,7 @@ async function mainPage(msg){
     display = msg.display;
     logSite = display.logSite;
     select = display.select;
-    // console.log(select);
+    // console.log(select.loop);
     
     // loadingOut(loading);
     if (account.level < 3) {
@@ -1060,9 +1054,8 @@ async function mainPage(msg){
     } 
     else {
       const groupSite = groupBySite(logSite);
-      // console.log(logSite);
       // console.log(groupSite);
-      // console.log(select);
+      // console.log(select.loop);
       
       
       $.each(groupSite[select.loop].houses, function (index, key) {
@@ -1073,13 +1066,10 @@ async function mainPage(msg){
           phase: key.house_phase,
         });
       });
-      // console.log(loadDataHouse);
-      
       statusMenu(display, "", loadDataHouse.length);
       if (display.select.houseID === "") {
         getHouse(groupSite[display.select.loop].houses, loadDataHouse);
-        startRealtime(loadDataHouse, display.select);
-        // alert('a')
+        await startRealtime(loadDataHouse, display.select);
       } else {
         // return false
         await dashboard(display.select, loadDataHouse);
@@ -1100,7 +1090,7 @@ async function mainPage(msg){
 function updateSensorValues(data, Dashselect) {
   for (var i = 0; i < data.length - 1; i++) {
     // console.log(data[i]);
-    // console.log(res[i-1]['v_AN_'.house_id+'_'+i]+" ++ "+(count(res) - 1));
+    // console.log(data[i].date.substring(0, data[i].date.length - 3) +' >= '+ data[data.length - 1]);
     if (
       data[i].date.substring(0, data[i].date.length - 3) >=
       data[data.length - 1]
@@ -1172,7 +1162,8 @@ function updateSensorValues(data, Dashselect) {
           .html("OFFLINE");
       }
     }
-    // console.log(Dashselect['sn']);
+    // console.log(Dashselect['sn']+' === '+ data[i].sn);
+    // console.log(data[i]);
     
     if ($(".memu_dash").hasClass("mm-active") === true) {
       if(Dashselect['sn'] === data[i].sn){
@@ -1189,10 +1180,13 @@ function updateSensorValues(data, Dashselect) {
                 .removeClass("text-danger")
                 .addClass("text-success")
                 .html(
-                  moment(data[i].date, "YYYY/MM/DD - HH:mm:ss").format(
-                    "HH:mm, DD MMM YYYY"
-                  )
+                  moment(data[i].date, "YYYY/MM/DD - HH:mm:ss").format("HH:mm, DD MMM YYYY")
                 );
+              $(".bar_name2")
+                .show()
+                .removeClass("text-danger")
+                .addClass("text-success")
+                .html(' ONLINE');
             } else {
               $(".bar_name")
                 .show()
@@ -1202,6 +1196,12 @@ function updateSensorValues(data, Dashselect) {
                   moment(data[i].date, "YYYY/MM/DD - HH:mm:ss").format(
                     "HH:mm, DD MMM YYYY"
                   )
+                );
+              $(".bar_name2")
+                  .show()
+                  .removeClass("text-success")
+                  .addClass("text-danger")
+                  .html('OFFLINE'
                 );
             }
           } else {
@@ -1214,6 +1214,12 @@ function updateSensorValues(data, Dashselect) {
                   "HH:mm, DD MMM YYYY"
                 )
               );
+            $(".bar_name2")
+                .show()
+                .removeClass("text-danger")
+                .addClass("text-success")
+                .html(' ONLINE'
+              );
           }
         } else {
           $(".bar_name")
@@ -1225,25 +1231,29 @@ function updateSensorValues(data, Dashselect) {
                 "HH:mm, DD MMM YYYY"
               )
             ); //data[i].date.substring(0,data[i].date.length-3)+' '+moment( new Date( data[i].date.substring(0,data[i].date.length-11) ) ).format('DD MMM YYYY'))
+          $(".bar_name2")
+              .show()
+              .removeClass("text-success")
+              .addClass("text-danger")
+              .html('OFFLINE'
+            );
         }
       }
     } else {
       $(".bar_name").hide();
+      $(".bar_name2").hide();
     }
     feather.replace();
   }
 }
 async function startRealtime(val, Dashselect) {
   try {
-    showLoading();
-    let newData = await loadData(val, Dashselect);
+    let newData = await loadData(val);
     // console.log(newData);
-    // console.log(Dashselect.phase);
-    // setTimeout(() => {
-        updateSensorValues(newData, Dashselect);
-    //     console.log('22');
-    // }, 300);
-     
+    // console.log(Dashselect);
+    
+    await updateSensorValues(newData, Dashselect);
+
     stopRealtime("loadData");
     realtimeInterLoadData = setInterval(async () => {
       newData = await loadData(val);
@@ -1253,8 +1263,6 @@ async function startRealtime(val, Dashselect) {
     }, 60000);
   } catch (error) {
     console.error("Error:", error);
-  } finally {
-    hideLoading();
   }
 }
 function stopRealtime(mode) {
@@ -1420,17 +1428,7 @@ function addArray(newData) {
   // console.log({time: moment(newData[0].date.slice(0, 18), 'YYYY/MM/dd - HH:mm').unix()});
 }
 // ---------------------------
-function showLoading() {
-  // สร้างฟังก์ชันเพื่อแสดง loading
-  // ตัวอย่าง: เพิ่ม class 'active' ให้กับ element ที่มี loading icon
-  $('#loading-overlay').addClass('active');
-}
 
-function hideLoading() {
-  // สร้างฟังก์ชันเพื่อซ่อน loading
-  // ตัวอย่าง: ลบ class 'active' ออกจาก element
-  $('#loading-overlay').removeClass('active');
-}
 // setting page
 async function getSetting(menu) {
   const msg = JSON.parse(sessionStorage.getItem("sessionLog"));
@@ -2491,27 +2489,19 @@ function renderTable(masterData, mode) {
     window.realtimeInterTable = setInterval(function () {
       let updatedData = [];
       if (realtimeDataTable !== null) {
-          // console.log(realtimeDataTable[realtimeDataTable.length-1]);
-          // console.log(realtimeDataTable[realtimeDataTable.length-1].length-2)
-        if(
-          realtimeDataTable[realtimeDataTable.length-1][realtimeDataTable[realtimeDataTable.length-1].length-2] != 0 &&
-          realtimeDataTable[realtimeDataTable.length-1][realtimeDataTable[realtimeDataTable.length-1].length-3] != 0
-        ){
-          realtimeDataTable.forEach((row) => {
-            const minuteKey = row[0];
-            
-            const ts = formatDate(minuteKey * 1000);
-            updatedData.push([
-              ts,
-              ts.slice(0, 10),
-              ts.slice(11, 16),
-              ...row.slice(1),
-            ]);
-          });
-          table.clear().rows.add(updatedData).draw();
-          // บังคับให้ซ่อน column 0 หลังจากการ update
-          table.column(0).visible(false);
-        }
+        realtimeDataTable.forEach((row) => {
+          const minuteKey = row[0];
+          const ts = formatDate(minuteKey * 1000);
+          updatedData.push([
+            ts,
+            ts.slice(0, 10),
+            ts.slice(11, 16),
+            ...row.slice(1),
+          ]);
+        });
+        table.clear().rows.add(updatedData).draw();
+        // บังคับให้ซ่อน column 0 หลังจากการ update
+        table.column(0).visible(false);
       }
     }, 30000);
   }
@@ -3218,7 +3208,7 @@ function formatDate(timestamp, isEnergy) {
   const hour = date.getHours().toString().padStart(2, "0");
   if (isEnergy) {
     // Format "YYYY/MM/dd HH"
-    return `${year}/${month}/${day} ${hour}:00`;
+    return `${year}/${month}/${day} ${hour}`;
   } else {
     const minute = date.getMinutes().toString().padStart(2, "0");
     // Format "YYYY/MM/dd HH:mm"
