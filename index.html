@@ -544,15 +544,13 @@
         realtimeInterChart = null,
         realtimeInterTable = null,
         realtimeDataTable = [];
-      // alert(partURL)
+
       // // กำหนดค่า default สำหรับ currentMode, currentTimeRange, resolution
       let currentType = "ENERGY"; // ค่าเริ่มต้น mode
       let currentTimeFrame = "day"; // default สำหรับ ENERGY mode คือ day (24 Hour)
       
       $(document).ready(async function () {
-        let msg = JSON.parse(sessionStorage.getItem("sessionLog"));
-        // console.log(msg);
-        mainPage(msg)
+        mainPage();
         $("#show_hide_password a").on("click", function (event) {
           event.preventDefault();
           if ($("#show_hide_password input").attr("type") == "text") {
@@ -611,7 +609,7 @@
               else {
                 sessionStorage.setItem("sessionLog", JSON.stringify(res.data));
                 // window.location.reload()
-                mainPage(res.data)    
+                mainPage()    
                 // console.log(res.data)
                 // return false
                 
@@ -671,7 +669,6 @@
               phase: key.house_phase,
             });
           });
-          // alert(newGroupSite.houses.length)
           if (newGroupSite.houses.length > 1) {
             getHouse(newGroupSite.houses, loadDataHouse);
             startRealtime(loadDataHouse, select);

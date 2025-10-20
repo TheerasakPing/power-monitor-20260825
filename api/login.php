@@ -36,7 +36,7 @@
         } else {
             $account_img = $row_count["account_img"];
         }
-        // $account_p = $row_count['account_pass'];
+        $account_p = $row_count['account_pass'];
 
         $level_1 = $dbcon->query("SELECT COUNT(`userST_level`) FROM `tb_user_st` WHERE `userST_accountID`='$u_id' AND `userST_level` = 1 ")->fetch()[0];
         if($level_1 > 0){ // sup
@@ -81,7 +81,7 @@
                             'siteName'  => $lise_House['site_name'],
                             'houseID'   => $lise_House['house_id'],
                             'houseName' => $lise_House['house_name'],
-                            'loop'     => 0,
+                            'loop'      => 0,
                             'loopHouse' => 0,
                             'sn'        => $lise_House['house_sn'],
                             'phase'     => $lise_House['house_phase'],
@@ -133,8 +133,8 @@
                     'id' => $u_id,
                     'user'  => $account_user,
                     'img'   => $account_img,
-                    'level' => $level
-                    // 'p'     => $account_p
+                    'level' => $level,
+                    'p'     => $account_p
                 ],
                 'theme'      => $account_theme,
                 'display' => $display,

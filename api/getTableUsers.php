@@ -19,7 +19,7 @@
             tb_user_st.userST_level,
             tb_account.account_main,
             (SELECT account_user FROM tb_account WHERE account_id = tb_user_st.userST_main LIMIT 1) AS main_account_user,
-            tb_account.account_timestamp,
+            tb_user_st.userST_timestamp,
             tb_account.account_id
         FROM tb_user_st
         INNER JOIN tb_account ON tb_user_st.userST_accountID = tb_account.account_id
@@ -44,7 +44,7 @@
             tb_user_st.userST_level,
             tb_account.account_main,
             (SELECT account_user FROM tb_account WHERE account_id = tb_user_st.userST_main LIMIT 1) AS main_account_user,
-            tb_account.account_timestamp,
+            tb_user_st.userST_timestamp,
             tb_account.account_id
         FROM tb_user_st
         INNER JOIN tb_account ON tb_user_st.userST_accountID = tb_account.account_id

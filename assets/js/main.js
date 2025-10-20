@@ -58,6 +58,7 @@ function toggleTheme(val) {
 function logout() {
   sessionStorage.removeItem("sessionLog");
   mainPage(null)
+  window.location.reload(true);
   // window.location.reload()
   // $.ajax({
   //   url: "203.150.107.116/powermeter/test_cloudflare/db/session.php",
@@ -311,8 +312,8 @@ async function getHouse(data, loadData) {
                 `;
     if (phase3Length === 0) {
       rowDiv.append(cardHtmlsmall);
-    } else {console.log(key.house_phase);
-    
+    } else {
+      // console.log(key.house_phase);
       if (index === 0) {
         if (key.house_phase === 3) {
           rowDiv.append(cardHtmlBig3);
@@ -1000,7 +1001,8 @@ function groupBySite(data) {
   return Object.values(groupedData);
 }
 // -------------------------
-async function mainPage(msg){
+async function mainPage(){
+  let msg = JSON.parse(sessionStorage.getItem("sessionLog"));
   // console.log(msg);
   
   if (msg === null) {
@@ -1055,7 +1057,7 @@ async function mainPage(msg){
     else {
       const groupSite = groupBySite(logSite);
       // console.log(groupSite);
-      // console.log(select.loop);
+      // console.log(select);
       
       
       $.each(groupSite[select.loop].houses, function (index, key) {
@@ -1447,12 +1449,14 @@ async function getSetting(menu) {
       siteName: key.site_name,
     });
   });
+  // console.log(newLogSite);
+
   const rowDiv = $("<div>", {
     class: "row",
   });
   const cardHtml = `
               <div class="row">
-                  <div class="col-12 col-lg-2 col-xl-2 d-flex">
+                  <div class="col-12 col-mb-4 col-lg-2 col-xl-2 d-flex">
                       <div class="card w-100 radius-10 border-3 border-info">
                           <div class="card-body">
                               <ul class="nav nav-pills flex-column" role="tablist">
@@ -1479,15 +1483,15 @@ async function getSetting(menu) {
                           </div>
                       </div>
                   </div>
-                  <div class="col-12 col-lg-10 col-xl-10">
-                      <div class="card radius-10 border-3 border-info shadow-none">
+                  <div class="col-12 col-mb-8 col-lg-10 col-xl-10">
+                      <div class=edit_p"card radius-10 border-3 border-info shadow-none">
                           <div class="card-body tab-content">
                               ${
                                 menu === 1
                                   ? `
                                   <div class="row g-3 p-5">
-                                      <div class="d-flex flex-column align-items-center text-center">
-                                          <img class="rounded-circle p-1 bg-primary pt_img2" src="assets/images/users/${account.img}" width="110">
+                                      <div class="d-flex flex-column align-items-center">
+                                          <img class="rounded-circle p-1 bg-primary pt_img2" src="assets/images/users/${account.img}" width="110" height="110">
                                           <input type="hidden" class="pt_img" value="${account.img}">
                                       </div>
                                       <hr>
@@ -1514,11 +1518,7 @@ async function getSetting(menu) {
                                           result +=
                                             '<select class="form-select mt-1" id="userSite" required="">';
 
-                                          for (
-                                            let i = 0;
-                                            i < newLogSite.length;
-                                            i++
-                                          ) {
+                                          for ( let i = 0; i < newLogSite.length; i++) {
                                             const site = newLogSite[i];
                                             result += `<option value="${site.siteID}">${site.siteName}</option>`;
                                           }
@@ -1579,7 +1579,7 @@ async function getSetting(menu) {
                                       </div>
                                   </div>
                                   <div class="d-flex flex-column align-items-center text-center">
-                                      <img class="rounded-circle p-1 bg-primary p_img" width="110">
+                                      <img class="rounded-circle p-1 bg-primary p_img" width="110" height="110">
                                       <div class="mt-3 input-group">
                                           <input type="file" class="form-control" name="p_img" id="p_img_input" onchange="Showimg_profile(this)">
                                           <input type="hidden" name="mode_insert" class="mode_insert">
@@ -1611,11 +1611,11 @@ async function getSetting(menu) {
                                                   <div class="input-group input-group-lg">
                                                       <span class="input-group-text bg-transparent"><i class="bx bx-id-card"></i></span>
                                                       <select class="form-control mode_site" name="mode_site" onchange="loadMeter($(this).val(), logSite)">`;
-                                              for (let i = 0; i < newLogSite.length; i++) {
-                                                const site = newLogSite[i];
-                                                result += `<option value="${site.siteID}">${site.siteName}</option>`;
-                                              }
-                                              result += `
+                                                        for (let i = 0; i < newLogSite.length; i++) {
+                                                          const site = newLogSite[i];
+                                                          result += `<option value="${site.siteID}">${site.siteName}</option>`;
+                                                        }
+                                                        result += `
                                                       </select>
                                                   </div>`;
                                               return result;
@@ -1639,7 +1639,7 @@ async function getSetting(menu) {
                                           <select name="p_status" class="form-control p_status">
                                               <option value="3">User</option>
                                               ${
-                                                account.level === 0
+                                                account.level === 1
                                                   ? '<option value="2">Admin</option><option value="1">Super Admin</option>'
                                                   : ""
                                               }
@@ -1776,7 +1776,7 @@ function renderUserTable(userData, newLogSite) {
     rowData.push(user.main_account_user);
 
     // Time Update
-    rowData.push(user.account_timestamp);
+    rowData.push(user.userST_timestamp);
 
     // Action Buttons
     let actionButtons = `<div class="buttons">`;
@@ -1937,9 +1937,78 @@ function setupEventListeners() {
             id: userId,
             acid: accountId,
             mode_insert: "delete_user",
+            name: name,
           },
           dataType: "json",
-          success: function (data) {
+          success: function (res) {
+            swal({
+              title: res.message,
+              text: res.text,
+              type: res.status,
+              allowOutsideClick: false,
+              confirmButtonColor: "#32CD32",
+            }).then((result) => {
+              if (result.value) {
+                if (res.status === "error") {
+                    location.reload();
+                } else if(res.status === "success"){
+                  let logSite = groupBySite(display.logSite),
+                    newLogSite = [];
+                  // console.log(logSite);
+                  $.each(logSite, function (index, key) {
+                    newLogSite.push({
+                      siteID: key.site_id,
+                      siteName: key.site_name,
+                    });
+                  });
+                  fetchUserData(account, newLogSite);
+                  if(res.response.count < 1){
+                    swal({
+                      title: "ลบข้อมูลผู้ใช้ออกจากระบบ !",
+                      text:
+                        "คุณต้องการลบ : " + name + " ออกจากระบบหรือไม่ ?",
+                      type: "warning",
+                      allowOutsideClick: false,
+                      showCancelButton: true,
+                      confirmButtonColor: "#00CC33",
+                      cancelButtonColor: "#d33",
+                      confirmButtonText: "Yes",
+                      cancelButtonText: "Cancel",
+                    }).then((result) => {
+                      if (result.value) {
+                        $.ajax({
+                          url: partURL+"save_setting.php",
+                          type: "POST",
+                          data: {
+                            id: res.response.user_id,
+                            mode_insert: "delete_user_system",
+                            img: img,
+                            name: name,
+                          },
+                          dataType: "json",
+                          success: function (data) {
+                            swal({
+                              title: data.message,
+                              text: data.text,
+                              type: data.status,
+                              allowOutsideClick: false,
+                              confirmButtonColor: "#32CD32",
+                            }).then((result) => {
+                              if (result.value) {
+                                if (data.status === "error") {
+                                    location.reload();
+                                } 
+                              }
+                            });
+                          },
+                        });
+                      }
+                    });
+                  }
+                }
+              }
+            });
+            return false;
             if (data.status == "Insert_Error") {
               swal({
                 title: "เกิดข้อผลิดพลาด !",
@@ -1993,6 +2062,7 @@ function setupEventListeners() {
                             id: data.user_id,
                             mode_insert: "delete_user_system",
                             img: img,
+                            name: name,
                           },
                           dataType: "json",
                           success: function (data) {
@@ -2088,7 +2158,9 @@ function setupEventListeners() {
   // เพิ่มผู้ใช้งานที่มีอยู่แล้ว
   $(document).on("click", ".s_manage", function () {
     $(".hid_se_name").show();
-    $(".sel_name").load("db/option_user.php").removeClass("is-invalid");
+    let sessionData = JSON.parse(sessionStorage.getItem("sessionLog"));
+    let accountValue = sessionData ? sessionData.account : '';
+    $(".sel_name").load(partURL+"option_user.php?id="+ accountValue.id +"&level="+accountValue.level).removeClass("is-invalid");
     $(".title_mod").html("เพิ่มผู้ใช้งานที่มีอยู่แล้ว");
     $(".mode_insert").val("add_user_e");
     $(".lev_us").show();
@@ -2114,177 +2186,154 @@ function setupEventListeners() {
     }
     $(".sel_name").removeClass("is-invalid");
     $(".bp_sel_name").html("");
+    // alert($(".sel_name option:selected").attr("iname"));
+    $(".p_name").val($(".sel_name option:selected").attr("iname"));
   });
   // Sumbit modal
   $(document).on("click", ".submit_p", function () {
-    if ($(".mode_insert").val() == "add_user_e") {
-      if ($(".sel_name").val() == "0") {
-        $(".sel_name").addClass("is-invalid");
-        $(".bp_sel_name").html("กรถณาเลือกผู้ใช้งาน");
-        return false;
-      } else {
-        $(".sel_name").removeClass("is-invalid");
-        $(".bp_sel_name").html("");
-      }
-      if ($(".mode_house").val() == "") {
-        $(".mode_house").addClass("is-invalid");
-        $(".bp_mode_house").html("กรถณาเลือก Meter");
-        return false;
-      } else {
-        $(".mode_house").removeClass("is-invalid");
-        $(".bp_mode_house").html("");
-      }
-      // alert($(".mode_house").val())
-      n_name = $(".sel_name option:selected").attr("iname");
-    } else {
-      if ($(".p_name").val() === "") {
-        $(".p_name").addClass("is-invalid");
-        $(".bp_name").html("กรถณาระบุชื่อผู้ใช้งาน");
-        return false;
-      } else {
-        $(".p_name").removeClass("is-invalid");
-      }
-      if (
-        $(".mode_insert").val() == "add_user" ||
-        $(".mode_insert").val() == "edit_user"
-      ) {
-        if ($(".mode_insert").val() == "add_user") {
-          if ($(".p_pass").val() === "") {
-            $(".p_pass").addClass("is-invalid");
-            $(".bp_pass").html("กรถณาระบุรหัสผ่าน");
-            return false;
-          } else {
-            $(".p_pass").removeClass("is-invalid");
-          }
-        }
-        if ($(".mode_house").val() == "") {
-          $(".mode_house").addClass("is-invalid");
-          $(".bp_mode_house").html("กรถณาเลือก Meter");
-          return false;
+    let isValid = true; // Flag to track validation status
+    const mode = $(".mode_insert").val();
+    // let n_name = "";
+    if (mode === "add_user_e") {
+        // Validation for existing user mode
+        if ($(".sel_name").val() === "0") {
+            $(".sel_name").addClass("is-invalid");
+            $(".bp_sel_name").html("กรุณาเลือกผู้ใช้งาน");
+            isValid = false;
         } else {
-          $(".mode_house").removeClass("is-invalid");
-          $(".bp_mode_house").html("");
+            $(".sel_name").removeClass("is-invalid");
+            $(".bp_sel_name").html("");
         }
-      }
-      n_name = $(".p_name").val();
+
+        if ($(".mode_house").val() === "") {
+            $(".mode_house").addClass("is-invalid");
+            $(".bp_mode_house").html("กรุณาเลือก Meter");
+            isValid = false;
+        } else {
+            $(".mode_house").removeClass("is-invalid");
+            $(".bp_mode_house").html("");
+        }
+        // n_name = $(".sel_name option:selected").attr("iname");
+
+    } else {
+        // Validation for new or editing user mode
+        if ($(".p_name").val() === "") {
+            $(".p_name").addClass("is-invalid");
+            $(".bp_name").html("กรุณาระบุชื่อผู้ใช้งาน");
+            isValid = false;
+        } else {
+            $(".p_name").removeClass("is-invalid").html("");
+        }
+
+        if (mode === "add_user") {
+            if ($(".p_pass").val() === "") {
+                $(".p_pass").addClass("is-invalid");
+                $(".bp_pass").html("กรุณาระบุรหัสผ่าน");
+                isValid = false;
+            } else {
+                $(".p_pass").removeClass("is-invalid").html("");
+            }
+        }
+        
+        if (mode === "add_user" || mode === "edit_user") {
+            if ($(".mode_house").val() === "") {
+                $(".mode_house").addClass("is-invalid");
+                $(".bp_mode_house").html("กรุณาเลือก Meter");
+                isValid = false;
+            } else {
+                $(".mode_house").removeClass("is-invalid");
+                $(".bp_mode_house").html("");
+            }
+        }
+        // n_name = $(".p_name").val();
     }
-    // console.log($('.mode_insert').val());
-    // console.log(new FormData($("#profile_from")[0]));
-    // return false
-    // let loading = verticalNoTitle();
+
+    // If validation fails, stop the function execution.
+    if (!isValid) {
+        return false;
+    }
+    
+    // // console.log($('.mode_insert').val());
+    // // console.log(new FormData($("#profile_from")[0]));
+    // // return false
+    // // let loading = verticalNoTitle();
+    let sessionData = JSON.parse(sessionStorage.getItem("sessionLog"));
+    let accountValue = sessionData ? sessionData.account : ''; // ตรวจสอบค่าว่างด้วย
+    // Prepare form data for submission
+    let formData = new FormData($("#profile_from")[0]);
+    formData.append('account', JSON.stringify(accountValue));
+
+    // console.log(sessionData);
+    
     $.ajax({
       type: "POST",
-      url: "https://iot.smartsoul-pcb.com/db/save_setting.php",
-      data: new FormData($("#profile_from")[0]),
+      url: partURL+"save_setting.php",
+      data: formData,
       contentType: false,
       cache: false,
       processData: false,
       success: function (res) {
         // loadingOut(loading);
-        var parseJSON = $.parseJSON(res);
-        // console.log(parseJSON.data)
-        // return false
-        if (parseJSON.status === "มีรายชื่อนี้แล้ว") {
+        // let parseJSON = res; //$.parseJSON(res);
+        // console.log(res);
+
+        // if (res.status === "warning") {
           swal({
-            title: "มีรายชื่อนี้แล้ว !",
-            // text: "" + sw_name + " ?",
-            type: "warning",
-            allowOutsideClick: false,
-            confirmButtonColor: "#32CD32",
-          });
-          $(".p_name").addClass("is-invalid");
-          $(".bp_name").html("Please enter a new username.");
-          return false;
-        }
-        if (parseJSON.status === "สกุลไฟล์ไม่ถูกต้อง") {
-          swal({
-            title: "The picture is not correct !",
-            text: "Please select a file extension gif, jpeg, jpg, png or svg",
-            type: "warning",
-            allowOutsideClick: false,
-            confirmButtonColor: "#32CD32",
-          });
-          return false;
-        }
-        if (parseJSON.status === "Limit") {
-          swal({
-            title: "จำกัดผู้ใช้งาน 5 บัญชี !",
-            text: "คุณเพิ่มบัญชีผู้ใช้งานถึงจำนวนสูงสุดแล้ว",
-            type: "warning",
-            allowOutsideClick: false,
-            confirmButtonColor: "#32CD32",
-          });
-          // $(".p_name").addClass("is-invalid");
-          // $(".bp_name").html("Please enter a new username.");
-          return false;
-        }
-        if (parseJSON.status === "yes_h") {
-          swal({
-            title: n_name + " เข้าถึงอยู่แล้ว !",
-            // text: "" + sw_name + " ?",
-            type: "warning",
-            allowOutsideClick: false,
-            confirmButtonColor: "#32CD32",
-          });
-          if ($(".mode_insert").val() == "add_user_e") {
-            $(".sel_name").addClass("is-invalid");
-            $(".bp_sel_name").html("กรถณาเลือกผู้ใช้งานอื่น");
-            return false;
-          } else {
-            $(".mode_house").addClass("is-invalid");
-            $(".bp_mode_house").html("กรุณาเลือก Meter อื่น");
-            return false;
-          }
-        }
-        if (parseJSON.status == "Insert_Error") {
-          swal({
-            title: "Error !",
-            text: "Failed to save !!!",
-            type: "error",
+            title: res.message,
+            text: res.text,
+            type: res.status,
             allowOutsideClick: false,
             confirmButtonColor: "#32CD32",
           }).then((result) => {
             if (result.value) {
-              location.reload();
+              if (res.status === "error") {
+                // if (res.response === "") {
+                  location.reload();
+                // }
+              } else if (res.status === "warning") {
+                if (res.response === "edit_profile") {
+                  $(".p_name").addClass("is-invalid");
+                  $(".bp_name").html("กรุณาระบุชื่อผู้ใช้งานใหม่");
+                }
+              } else if(res.status === "success"){
+                if (res.response.mode === "edit_profile") {
+                  $(".user-img").attr(
+                    "src",
+                    "assets/images/users/" + res.response.account.img
+                  );
+                  $(".user_name").html(res.response.account.user);
+
+                  $(".pt_img").val(res.response.account.img);
+                  $(".pt_img2").attr(
+                    "src",
+                    "assets/images/users/" + res.response.account.img
+                  );
+                  $(".pt_name").val(res.response.account.user);
+                  // console.log(sessionData);
+                  sessionData.account = res.response.account;
+                  sessionStorage.setItem("sessionLog", JSON.stringify(sessionData));
+                  // console.log(res.response.account);
+                  // console.log(sessionData);
+                  $("#modal_profile").modal("hide");
+                } else {
+                  let logSite = groupBySite(display.logSite),
+                    newLogSite = [];
+                  // console.log(logSite);
+                  $.each(logSite, function (index, key) {
+                    newLogSite.push({
+                      siteID: key.site_id,
+                      siteName: key.site_name,
+                    });
+                  });
+                  fetchUserData(account, newLogSite);
+                  $("#modal_profile").modal("hide");
+                }
+              }
             }
           });
-          return false;
-        }
-        if (parseJSON.status == "Insert_success") {
-          if ($(".mode_insert").val() === "edit_profile") {
-            $(".user-img").attr(
-              "src",
-              "assets/images/users/" + parseJSON.data.image
-            );
-            $(".user_name").html(parseJSON.data.user);
-
-            $(".pt_img").val(parseJSON.data.image);
-            $(".pt_img2").attr(
-              "src",
-              "assets/images/users/" + parseJSON.data.image
-            );
-            $(".pt_name").val(parseJSON.data.user);
-          } else {
-            let logSite = groupBySite(display.logSite),
-              newLogSite = [];
-            // console.log(logSite);
-            $.each(logSite, function (index, key) {
-              newLogSite.push({
-                siteID: key.site_id,
-                siteName: key.site_name,
-              });
-            });
-            fetchUserData(account, newLogSite);
-          }
-          swal({
-            title: "Successfully.",
-            // text: "" + sw_name + " ?",
-            type: "success",
-            allowOutsideClick: false,
-            confirmButtonColor: "#32CD32",
-          });
-          $("#modal_profile").modal("hide");
-        }
+          
+          // return false;
+        // }
       },
     });
   });
