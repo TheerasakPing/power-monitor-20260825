@@ -1001,8 +1001,7 @@ function groupBySite(data) {
   return Object.values(groupedData);
 }
 // -------------------------
-async function mainPage(){
-  let msg = JSON.parse(sessionStorage.getItem("sessionLog"));
+async function mainPage(msg){
   // console.log(msg);
   
   if (msg === null) {

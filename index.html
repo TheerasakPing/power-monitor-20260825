@@ -550,7 +550,8 @@
       let currentTimeFrame = "day"; // default สำหรับ ENERGY mode คือ day (24 Hour)
       
       $(document).ready(async function () {
-        mainPage();
+        let msg = JSON.parse(sessionStorage.getItem("sessionLog"));
+        mainPage(msg);
         $("#show_hide_password a").on("click", function (event) {
           event.preventDefault();
           if ($("#show_hide_password input").attr("type") == "text") {
@@ -609,7 +610,7 @@
               else {
                 sessionStorage.setItem("sessionLog", JSON.stringify(res.data));
                 // window.location.reload()
-                mainPage()    
+                mainPage(res.data)    
                 // console.log(res.data)
                 // return false
                 
