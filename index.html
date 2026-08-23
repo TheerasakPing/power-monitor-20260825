@@ -177,6 +177,7 @@
                     </div>
                     <div class="form-body">
                       <form class="row g-3" id="login" onsubmit="return false">
+                        <div id="login-turnstile" style="display:flex;justify-content:center;margin:12px 0;"></div>
                         <div class="col-12">
                           <label for="name" class="form-label"
                             >ชื่อผู้ใช้</label
@@ -887,5 +888,6 @@
         });
       });
     </script>
-  </body>
+  <script src="assets/js/login-turnstile-frontend.js" defer></script>
+</body>
 </html>
