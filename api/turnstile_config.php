@@ -1,6 +1,8 @@
 <?php
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store, max-age=0');
+header('Access-Control-Allow-Origin: *');
+header('Vary: Origin');
 
 $siteKey = trim((string) (getenv('TURNSTILE_SITE_KEY') ?: ''));
 
