@@ -37,9 +37,7 @@
 
   function animateReadouts() {
     var values = document.querySelectorAll('.pm-readout-value');
-    if (values.length < 3) return;
-    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reduceMotion) return;
+    if (values.length < 3 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     var targets = [
       { el: values[0], min: 228.4, max: 231.8 },
       { el: values[1], min: 17.4, max: 20.1 },
@@ -59,25 +57,11 @@
     readoutTimer = window.setInterval(tick, 900);
   }
 
-  function setupLogout() {
-    if (!window.jQuery) return;
-    window.jQuery(document).off('click.pmLogout', '.logout').on('click.pmLogout', '.logout', function (event) {
-      event.preventDefault();
-      window.jQuery.ajax({ type: 'POST', url: (window.partURL || 'https://api.smartsoul-pcb.com/powermeter/') + 'logout.php' })
-        .always(function () {
-          sessionStorage.removeItem('sessionLog');
-          if (typeof window.mainPage === 'function') window.mainPage(null);
-          window.location.reload();
-        });
-    });
-  }
-
   function init() {
     var form = document.getElementById('login');
     if (!form || initialized) return;
     initialized = true;
     animateReadouts();
-    setupLogout();
 
     var wrapper = document.createElement('div');
     wrapper.className = 'col-12 pm-turnstile-runtime';
