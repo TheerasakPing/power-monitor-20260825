@@ -1,25 +1,35 @@
 <?php
-    
-    $db["host"] = "localhost"; // "192.168.1.194";//
-    $db["user"] = "root";
-    $db["pass"] = "Tt@67235520";
-    $db["name"] = "db_powermeter";
-    try{
-        $dbcon = new PDO( "mysql:host=".$db["host"]."; dbname=".$db["name"]."", $db["user"], $db["pass"],
-        array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8" ));
-    }catch(PDOException $ex){
-        echo $ex->getMessage();
-    }
+declare(strict_types=1);
+require_once __DIR__ . '/bootstrap.php';
 
-    //วันที่
-    date_default_timezone_set('Asia/Bangkok');
-    // $today_date=date("d-m-Y");
-    // $day_date=date("Y/m/d");
-    // $today_time=date("H:i");
+$local = __DIR__ . '/config.local.php';
+$config = is_file($local) ? require $local : [];
+$config = is_array($config) ? $config : [];
 
+$host = (string) ($config['host'] ?? getenv('DB_HOST') ?: 'localhost');
+$user = (string) ($config['user'] ?? getenv('DB_USER') ?: '');
+$pass = (string) ($config['pass'] ?? getenv('DB_PASS') ?: '');
+$name = (string) ($config['name'] ?? getenv('DB_NAME') ?: 'db_powermeter');
 
+if ($user === '' || $pass === '') {
+    error_log('PowerMonitor DB credentials are not configured');
+    api_json_error('Service temporarily unavailable', 503);
+}
 
-
-
-
-    // https://smartgreenhouse.fuji-innovation.com/Config/HW_insertData.php?sn=1&date=2&time=3&DataST1_1=4&DataST1_2=5&DataST1_3=6&DataST1_4=7&DataST2_1=8&DataST2_2=9&DataST2_3=10&DataST2_4=11&DataST3_1=12&DataST3_2=13&DataST3_3=14&DataST3_4=15&DataST4_1=16&DataST4_2=17&DataST4_3=18&DataST4_4=19&Control01=20&Control02=21&Control03=21&Control04=22
+try {
+    $dbcon = new PDO(
+        "mysql:host={$host};dbname={$name};charset=utf8mb4",
+        $user,
+        $pass,
+        [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            PDO::ATTR_EMULATE_PREPARES => false,
+            PDO::ATTR_STRINGIFY_FETCHES => false,
+            PDO::ATTR_TIMEOUT => 5,
+        ]
+    );
+} catch (PDOException $ex) {
+    error_log('PowerMonitor DB connection failure: ' . $ex->getMessage());
+    api_json_error('Service temporarily unavailable', 503);
+}
