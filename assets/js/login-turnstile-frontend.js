@@ -2,7 +2,7 @@
 (function () {
   'use strict';
 
-  var SITE_KEY = '0x4AAAAAAEZYtO7CPcgOUFwo';
+  var SITE_KEY = '0x4AAAAAAEb0MY0iBb-TVKbC';
   var initialized = false;
   var widgetId = null;
   var readoutTimer = null;
