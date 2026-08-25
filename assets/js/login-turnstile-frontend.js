@@ -1,4 +1,4 @@
-/* Frontend-only Cloudflare Turnstile widget for the login page. */
+/* Frontend-only Cloudflare Turnstile widget + live login readouts. */
 (function () {
   'use strict';
 
@@ -32,11 +32,37 @@
     document.head.appendChild(script);
   }
 
+  function animateReadouts() {
+    var values = document.querySelectorAll('.pm-readout-value');
+    if (values.length < 3 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    var targets = [
+      { el: values[0], min: 228.4, max: 231.8, decimals: 1 },
+      { el: values[1], min: 17.4, max: 20.1, decimals: 1 },
+      { el: values[2], min: 125.8, max: 128.9, decimals: 1 }
+    ];
+
+    function tick() {
+      var t = Date.now() / 1000;
+      targets.forEach(function (item, index) {
+        var wave = Math.sin(t * (0.42 + index * 0.06) + index * 1.7);
+        var drift = Math.sin(t * 0.19 + index * 0.8) * 0.22;
+        var normalized = Math.max(0, Math.min(1, (wave + 1) / 2 + drift * 0.08));
+        var value = item.min + (item.max - item.min) * normalized;
+        item.el.firstChild.nodeValue = value.toFixed(item.decimals);
+      });
+    }
+
+    tick();
+    setInterval(tick, 900);
+  }
+
   function init() {
     var form = document.getElementById('login');
     if (!form || initialized) return;
 
     initialized = true;
+    animateReadouts();
 
     var wrapper = document.createElement('div');
     wrapper.className = 'col-12';
