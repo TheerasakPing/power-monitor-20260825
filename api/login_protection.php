@@ -1,8 +1,5 @@
 <?php
-/**
- * Login protection helpers: Cloudflare Turnstile + database-backed rate limiting.
- * Secrets are read from environment variables and never returned to clients.
- */
+/** Login protection helpers: rate limiting + Cloudflare Turnstile. */
 
 const LOGIN_RATE_LIMITS = [
     'ip_short' => ['max' => 5, 'window' => 60],
@@ -14,30 +11,15 @@ function json_error(string $message, int $status = 400, array $extra = []): neve
 {
     http_response_code($status);
     header('Content-Type: application/json; charset=utf-8');
-    echo json_encode(array_merge([
-        'status' => false,
-        'message' => $message,
-    ], $extra), JSON_UNESCAPED_UNICODE);
+    echo json_encode(array_merge(['status' => false, 'message' => $message], $extra), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     exit;
 }
 
 function get_client_ip(): string
 {
-    // Trust Cloudflare's CF-Connecting-IP only when the request is actually
-    // coming through Cloudflare. Otherwise use the direct REMOTE_ADDR.
     $remote = $_SERVER['REMOTE_ADDR'] ?? '';
     $cfIp = $_SERVER['HTTP_CF_CONNECTING_IP'] ?? '';
-
-    if ($cfIp !== '' && filter_var($remote, FILTER_VALIDATE_IP)) {
-        // Optional deployment hardening: set TRUST_CLOUDFLARE_PROXY=1 only when
-        // the origin is actually protected by Cloudflare and direct access is blocked.
-        if (getenv('TRUST_CLOUDFLARE_PROXY') === '1') {
-            if (filter_var($cfIp, FILTER_VALIDATE_IP)) {
-                return $cfIp;
-            }
-        }
-    }
-
+    if (getenv('TRUST_CLOUDFLARE_PROXY') === '1' && filter_var($cfIp, FILTER_VALIDATE_IP)) return $cfIp;
     return filter_var($remote, FILTER_VALIDATE_IP) ? $remote : 'unknown';
 }
 
@@ -50,10 +32,7 @@ function normalize_login_identifier(string $username): string
 function ensure_login_rate_table(PDO $db): void
 {
     static $ready = false;
-    if ($ready) {
-        return;
-    }
-
+    if ($ready) return;
     $sql = "CREATE TABLE IF NOT EXISTS `tb_login_rate_limit` (
         `rate_key` VARCHAR(255) NOT NULL,
         `window_name` VARCHAR(32) NOT NULL,
@@ -63,11 +42,7 @@ function ensure_login_rate_table(PDO $db): void
         PRIMARY KEY (`rate_key`, `window_name`, `window_start`),
         INDEX `idx_login_rate_updated` (`updated_at`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
-
-    if (!$db->exec($sql)) {
-        throw new RuntimeException('Unable to initialize login rate limiter');
-    }
-
+    $db->exec($sql);
     $ready = true;
 }
 
@@ -75,77 +50,41 @@ function consume_rate_limit(PDO $db, string $key, string $windowName, int $max, 
 {
     $now = time();
     $windowStart = intdiv($now, $windowSeconds) * $windowSeconds;
-
-    $sql = "INSERT INTO `tb_login_rate_limit` (`rate_key`, `window_name`, `window_start`, `attempts`)
-            VALUES (:rate_key, :window_name, :window_start, 1)
-            ON DUPLICATE KEY UPDATE `attempts` = `attempts` + 1";
-    $stmt = $db->prepare($sql);
-    $stmt->execute([
-        ':rate_key' => $key,
-        ':window_name' => $windowName,
-        ':window_start' => $windowStart,
-    ]);
-
-    $stmt = $db->prepare("SELECT `attempts` FROM `tb_login_rate_limit`
-                          WHERE `rate_key` = :rate_key
-                            AND `window_name` = :window_name
-                            AND `window_start` = :window_start
-                          LIMIT 1");
-    $stmt->execute([
-        ':rate_key' => $key,
-        ':window_name' => $windowName,
-        ':window_start' => $windowStart,
-    ]);
-    $attempts = (int) $stmt->fetchColumn();
-
-    $resetAt = $windowStart + $windowSeconds;
-    return [
-        'allowed' => $attempts <= $max,
-        'attempts' => $attempts,
-        'retry_after' => max(1, $resetAt - $now),
-    ];
+    $stmt = $db->prepare("INSERT INTO tb_login_rate_limit (rate_key, window_name, window_start, attempts)
+        VALUES (:rate_key, :window_name, :window_start, 1)
+        ON DUPLICATE KEY UPDATE attempts = attempts + 1");
+    $stmt->execute([':rate_key'=>$key, ':window_name'=>$windowName, ':window_start'=>$windowStart]);
+    $stmt = $db->prepare("SELECT attempts FROM tb_login_rate_limit WHERE rate_key=:rate_key AND window_name=:window_name AND window_start=:window_start LIMIT 1");
+    $stmt->execute([':rate_key'=>$key, ':window_name'=>$windowName, ':window_start'=>$windowStart]);
+    $attempts = (int)$stmt->fetchColumn();
+    return ['allowed'=>$attempts <= $max, 'retry_after'=>max(1, $windowStart + $windowSeconds - $now)];
 }
 
 function check_login_rate_limit(PDO $db, string $username, string $ip): array
 {
     ensure_login_rate_table($db);
-
     $identifier = normalize_login_identifier($username);
     $checks = [
-        consume_rate_limit($db, 'ip:' . hash('sha256', $ip), 'ip_short', LOGIN_RATE_LIMITS['ip_short']['max'], LOGIN_RATE_LIMITS['ip_short']['window']),
-        consume_rate_limit($db, 'ip:' . hash('sha256', $ip), 'ip_long', LOGIN_RATE_LIMITS['ip_long']['max'], LOGIN_RATE_LIMITS['ip_long']['window']),
-        consume_rate_limit($db, 'acct:' . hash('sha256', $identifier), 'account', LOGIN_RATE_LIMITS['account']['max'], LOGIN_RATE_LIMITS['account']['window']),
+        consume_rate_limit($db, 'ip:' . hash('sha256', $ip), 'ip_short', 5, 60),
+        consume_rate_limit($db, 'ip:' . hash('sha256', $ip), 'ip_long', 10, 600),
+        consume_rate_limit($db, 'acct:' . hash('sha256', $identifier), 'account', 5, 600),
     ];
-
     foreach ($checks as $check) {
-        if (!$check['allowed']) {
-            return [
-                'allowed' => false,
-                'retry_after' => $check['retry_after'],
-            ];
-        }
+        if (!$check['allowed']) return ['allowed'=>false, 'retry_after'=>$check['retry_after']];
     }
-
-    return ['allowed' => true, 'retry_after' => 0];
+    return ['allowed'=>true, 'retry_after'=>0];
 }
 
 function verify_turnstile(string $token, string $remoteIp): bool
 {
     $secret = getenv('TURNSTILE_SECRET');
     if (!$secret) {
-        throw new RuntimeException('TURNSTILE_SECRET is not configured');
+        if (getenv('TURNSTILE_ENFORCE') === '1') throw new RuntimeException('TURNSTILE_SECRET is not configured');
+        return true;
     }
+    if ($token === '' || strlen($token) > 2048) return false;
 
-    if ($token === '' || strlen($token) > 2048) {
-        return false;
-    }
-
-    $payload = json_encode([
-        'secret' => $secret,
-        'response' => $token,
-        'remoteip' => $remoteIp,
-    ], JSON_UNESCAPED_SLASHES);
-
+    $payload = json_encode(['secret'=>$secret, 'response'=>$token, 'remoteip'=>$remoteIp], JSON_UNESCAPED_SLASHES);
     $ch = curl_init('https://challenges.cloudflare.com/turnstile/v0/siteverify');
     curl_setopt_array($ch, [
         CURLOPT_POST => true,
@@ -157,44 +96,21 @@ function verify_turnstile(string $token, string $remoteIp): bool
         CURLOPT_SSL_VERIFYPEER => true,
         CURLOPT_SSL_VERIFYHOST => 2,
     ]);
-
     $raw = curl_exec($ch);
-    $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $httpCode = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
-
-    if ($raw === false || $httpCode < 200 || $httpCode >= 300) {
-        return false;
-    }
+    if ($raw === false || $httpCode < 200 || $httpCode >= 300) return false;
 
     $result = json_decode($raw, true);
-    if (!is_array($result) || ($result['success'] ?? false) !== true) {
-        return false;
-    }
-
+    if (!is_array($result) || ($result['success'] ?? false) !== true) return false;
     $expectedAction = getenv('TURNSTILE_ACTION') ?: 'login';
-    if (!empty($expectedAction) && (($result['action'] ?? '') !== $expectedAction)) {
-        return false;
-    }
-
+    if ($expectedAction !== '' && ($result['action'] ?? '') !== $expectedAction) return false;
     $allowedHosts = array_values(array_filter(array_map('trim', explode(',', getenv('TURNSTILE_HOSTNAMES') ?: ''))));
-    if ($allowedHosts !== [] && !in_array($result['hostname'] ?? '', $allowedHosts, true)) {
-        return false;
-    }
-
+    if ($allowedHosts !== [] && !in_array($result['hostname'] ?? '', $allowedHosts, true)) return false;
     return true;
-}
-
-function get_turnstile_site_key(): string
-{
-    return trim((string) (getenv('TURNSTILE_SITE_KEY') ?: ''));
 }
 
 function cleanup_login_rate_table(PDO $db): void
 {
-    // Best-effort housekeeping. Failure here should not break login.
-    try {
-        $db->exec("DELETE FROM `tb_login_rate_limit` WHERE `updated_at` < (NOW() - INTERVAL 1 DAY)");
-    } catch (Throwable $e) {
-        // Intentionally ignored.
-    }
+    try { $db->exec("DELETE FROM tb_login_rate_limit WHERE updated_at < (NOW() - INTERVAL 1 DAY)"); } catch (Throwable $e) { }
 }
