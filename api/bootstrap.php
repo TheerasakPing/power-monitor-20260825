@@ -13,7 +13,7 @@ function api_apply_headers(): void
     header('Pragma: no-cache');
 
     $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
-    $allowed = array_values(array_filter(array_map('trim', explode(',', getenv('ALLOWED_ORIGINS') ?: 'https://app.smartsoul-pcb.com'))));
+    $allowed = array_values(array_filter(array_map('trim', explode(',', getenv('ALLOWED_ORIGINS') ?: 'https://apps.smartsoul-pcb.com'))));
     if ($origin !== '' && in_array($origin, $allowed, true)) {
         header('Access-Control-Allow-Origin: ' . $origin);
         header('Vary: Origin');
