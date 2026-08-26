@@ -31,9 +31,41 @@
     script.defer = true;
     script.setAttribute('data-powermonitor-turnstile', '1');
     script.onload = done;
-    script.onerror = function () { console.warn('Turnstile script failed to load'); };
+    script.onerror = function () {
+      console.warn('Turnstile script failed to load');
+      setReady(false, 'Cloudflare verification could not load.');
+    };
     document.head.appendChild(script);
   }
+
+  function setReady(ready, message) {
+    var form = document.getElementById('login');
+    if (!form) return;
+    form.dataset.turnstileReady = ready ? '1' : '0';
+    form.dataset.turnstileMessage = message || '';
+  }
+
+  function getToken() {
+    if (!window.turnstile || widgetId === null) return '';
+    try { return window.turnstile.getResponse(widgetId) || ''; }
+    catch (e) { return ''; }
+  }
+
+  window.PowerMonitorTurnstile = {
+    isReady: function () {
+      var form = document.getElementById('login');
+      return !!(form && form.dataset.turnstileReady === '1' && getToken());
+    },
+    getToken: getToken,
+    reset: function () {
+      if (window.turnstile && widgetId !== null) window.turnstile.reset(widgetId);
+      setReady(false, 'Please complete the Cloudflare verification.');
+    },
+    message: function () {
+      var form = document.getElementById('login');
+      return form ? (form.dataset.turnstileMessage || '') : '';
+    }
+  };
 
   function animateReadouts() {
     var values = document.querySelectorAll('.pm-readout-value');
@@ -61,6 +93,7 @@
     var form = document.getElementById('login');
     if (!form || initialized) return;
     initialized = true;
+    setReady(false, 'Please complete the Cloudflare verification.');
     animateReadouts();
 
     var wrapper = document.createElement('div');
@@ -78,14 +111,25 @@
 
     loadScript(function () {
       if (!window.turnstile) return;
-      widgetId = window.turnstile.render('#login-turnstile', {
-        sitekey: SITE_KEY,
-        theme: 'auto',
-        action: 'login',
-        callback: function () { form.dataset.turnstileReady = '1'; },
-        'expired-callback': function () { form.dataset.turnstileReady = '0'; },
-        'error-callback': function () { form.dataset.turnstileReady = '0'; }
-      });
+      try {
+        widgetId = window.turnstile.render('#login-turnstile', {
+          sitekey: SITE_KEY,
+          theme: 'auto',
+          action: 'login',
+          callback: function () {
+            setReady(!!getToken(), '');
+          },
+          'expired-callback': function () {
+            setReady(false, 'Cloudflare verification expired. Please verify again.');
+          },
+          'error-callback': function () {
+            setReady(false, 'Cloudflare verification failed. Please retry.');
+          }
+        });
+      } catch (error) {
+        setReady(false, 'Cloudflare verification could not initialize.');
+        console.error('Turnstile initialization failed:', error);
+      }
     });
   }
 
