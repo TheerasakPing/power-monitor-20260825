@@ -133,6 +133,27 @@
     });
   }
 
+  document.addEventListener('submit', function (event) {
+    if (!initialized || !event.target || event.target.id !== 'login') return;
+    if (!window.PowerMonitorTurnstile.isReady()) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      var message = window.PowerMonitorTurnstile.message() || 'Please complete the Cloudflare verification.';
+      if (window.swal) {
+        swal({
+          title: 'Verification required',
+          text: message,
+          type: 'warning',
+          allowOutsideClick: false,
+          confirmButtonColor: '#0d6efd'
+        });
+      } else {
+        window.alert(message);
+      }
+      return false;
+    }
+  }, true);
+
   document.addEventListener('visibilitychange', function () {
     if (document.hidden) {
       if (readoutTimer) { clearInterval(readoutTimer); readoutTimer = null; }
