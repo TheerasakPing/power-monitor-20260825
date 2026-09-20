@@ -6,15 +6,18 @@ header('Content-Type: application/json; charset=utf-8');
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') json_error('Method Not Allowed', 405);
 $username = trim((string)($_POST['name'] ?? ''));
 $password = (string)($_POST['pass'] ?? '');
-$turnstileToken = trim((string)($_POST['cf-turnstile-response'] ?? ''));
+// TEMPORARILY DISABLED: Cloudflare Turnstile token
+// $turnstileToken = trim((string)($_POST['cf-turnstile-response'] ?? ''));
 if ($username === '' || $password === '') json_error('Invalid request', 400);
 $ip = get_client_ip();
 try {
     $limit = check_login_rate_limit($dbcon, $username, $ip);
     if (!$limit['allowed']) { header('Retry-After: ' . $limit['retry_after']); json_error('Too many login attempts. Please try again later.', 429, ['retry_after'=>$limit['retry_after']]); }
 } catch (Throwable $e) { error_log('Login rate limiter failure: ' . $e->getMessage()); json_error('Login service temporarily unavailable', 503); }
+/* TEMPORARILY DISABLED: Cloudflare Turnstile verification
 try { if (!verify_turnstile($turnstileToken, $ip)) json_error('Human verification failed. Please try again.', 403); }
 catch (Throwable $e) { error_log('Turnstile verification failure: ' . $e->getMessage()); json_error('Login service temporarily unavailable', 503); }
+*/
 
 $query = $dbcon->prepare("SELECT * FROM tb_account WHERE account_user = :username LIMIT 1");
 $query->execute([':username'=>$username]);
