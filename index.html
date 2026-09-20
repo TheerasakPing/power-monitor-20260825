@@ -33,6 +33,10 @@
       rel="stylesheet"
       type="text/css"
     /> -->
+
+    <!-- Cloudflare Turnstile API -->
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
     <style>
       .gauge {
         display: block;
@@ -544,34 +548,70 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
           }
         });
         
+        // ตัวแปรสำหรับเก็บ Widget ID ของ Cloudflare Turnstile
+        let turnstileWidgetId = null;
+
+        // Render Cloudflare Turnstile เข้าไปที่ #login-turnstile
+        if (window.turnstile && $("#login-turnstile").length) {
+          turnstileWidgetId = turnstile.render("#login-turnstile", {
+            sitekey: "YOUR_CLOUDFLARE_SITE_KEY", // <--- นำ Site Key ของ Cloudflare มาใส่ตรงนี้
+            theme: "dark"
+          });
+        }
+
         $("#login").submit(function (e) {
           e.preventDefault();
-          if ($([this.name]).val() === "" && $([this.pass]).val() === "") {
-            $([this.name]).addClass("is-invalid");
-            $([this.pass]).addClass("is-invalid");
-            return false;
-          }
-          if ($([this.name]).val() === "") {
-            $([this.name]).addClass("is-invalid");
-            return false;
+
+          // 1. ดึง Token จาก Cloudflare Turnstile
+          let turnstileResponse = window.turnstile && typeof turnstileWidgetId !== 'undefined' && turnstileWidgetId !== null 
+            ? turnstile.getResponse(turnstileWidgetId) 
+            : "";
+
+          // 2. ตรวจสอบค่าว่าง (Validation) ที่ถูกต้อง
+          let $name = $("#name"); // อ้างอิง id="name"
+          let $pass = $("#pass"); // อ้างอิง id="pass"
+          let isValid = true;
+
+          if ($name.val().trim() === "") {
+            $name.addClass("is-invalid");
+            isValid = false;
           } else {
-            $([this.name]).removeClass("is-invalid");
+            $name.removeClass("is-invalid");
           }
-          if ($([this.pass]).val() === "") {
-            $([this.pass]).addClass("is-invalid");
-            return false;
+
+          if ($pass.val().trim() === "") {
+            $pass.addClass("is-invalid");
+            isValid = false;
           } else {
-            $([this.pass]).removeClass("is-invalid");
+            $pass.removeClass("is-invalid");
           }
+
+          // ถ้าช่องใดช่องหนึ่งว่าง ให้หยุดการทำงาน (ไม่ส่ง AJAX)
+          if (!isValid) {
+            return false;
+          }
+
+          // 3. รวมข้อมูลจาก Form และ Turnstile Token เข้าด้วยกัน
+          let formData = $(this).serialize();
+          if (turnstileResponse) {
+            formData += "&cf-turnstile-response=" + encodeURIComponent(turnstileResponse);
+          }
+
+          // 4. ส่งข้อมูลไปยัง Backend ด้วย AJAX
           $.ajax({
             type: "POST",
-            url: partURL+"login.php",
-            data: $(this).serialize(),
+            url: partURL + "login.php",
+            data: formData, // ใช้ formData ที่รวม token แล้ว แทน $(this).serialize()
             dataType: "json",
             success: function (res) {
-              if (res.status === false){
+              if (res.status === false) {
                 if (res.message === 'No user') {
                   $(".l_err").show();
+                  
+                  // Reset Captcha เมื่อรหัสผิด
+                  if (window.turnstile && typeof turnstileWidgetId !== 'undefined' && turnstileWidgetId !== null) {
+                    turnstile.reset(turnstileWidgetId);
+                  }
                   return false;
                 } else if (res.message === "Suspend") {
                   swal({
@@ -581,30 +621,35 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
                     allowOutsideClick: false,
                     confirmButtonColor: "#32CD32",
                   });
+                  
+                  // Reset Captcha เมื่อบัญชีโดนระงับ
+                  if (window.turnstile && typeof turnstileWidgetId !== 'undefined' && turnstileWidgetId !== null) {
+                    turnstile.reset(turnstileWidgetId);
+                  }
                   return false;
                 }
               } 
               else {
                 sessionStorage.setItem("sessionLog", JSON.stringify(res.data));
-                // window.location.reload()
-                mainPage(res.data)    
-                // console.log(res.data)
-                // return false
-                
+                mainPage(res.data);
               }
             },
             error: function (data) {
               swal({
                 title: "Error",
-                text: "เกิดข้อผิดพลาด",
+                text: "เกิดข้อผิดพลาดในการเชื่อมต่อ",
                 type: "warning",
                 allowOutsideClick: false,
                 confirmButtonColor: "#32CD32",
               });
+              
+              // Reset Captcha เมื่อเกิด Error
+              if (window.turnstile && typeof turnstileWidgetId !== 'undefined' && turnstileWidgetId !== null) {
+                turnstile.reset(turnstileWidgetId);
+              }
             },
           });
-        });
-        $(".logout").click(function () {
+        });$(".logout").click(function () {
           logout();
         });
         // return false;
