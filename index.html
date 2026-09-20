@@ -34,8 +34,8 @@
       type="text/css"
     /> -->
 
-    <!-- Cloudflare Turnstile API -->
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <!-- Cloudflare Turnstile API
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script> -->
 
     <style>
       .gauge {
@@ -178,42 +178,66 @@
     <!--wrapper-->
     <div class="wrapper">
       <div id="page-login">
-        <!--
-IMPECCABLE DIRECTION CONTRACT
-THESIS: Power Monitor should feel like a real measurement instrument, not a generic dashboard login.
-OWN-WORLD: graphite instrument panel, phosphor-green measurement accent, etched graticule, crisp controls, measured spacing.
-STORY: visitors immediately understand this is an electrical monitoring system, then sign in through a calm, technical control surface.
-FIRST VIEWPORT: left side establishes the instrument world with a live-style graticule/readout; right side keeps the authentication task focused and dominant.
-FORM: assigned grounded direction 4, oscilloscope signal-bench, seed 5bdc253b.
-FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance
--->
-<div class="pm-login-shell"><div class="pm-login-grid">
-  <section class="pm-hero" aria-labelledby="pm-login-h1"><div>
-    <div class="pm-brand"><div class="pm-brand-mark"><i class="bx bx-bolt-circle" aria-hidden="true"></i></div><div><h1 id="pm-login-h1" class="pm-brand-title mb-0">POWER MONITOR</h1><div class="pm-brand-sub">Electrical Monitoring Platform</div></div></div>
-    <h2>มองเห็นระบบไฟฟ้า<br>ได้ชัดเจนทุกช่วงเวลา</h2>
-    <p>ติดตามแรงดัน กระแส กำลังไฟฟ้า และพลังงานจากมิเตอร์ที่เชื่อมต่อกับระบบ เพื่อให้คุณเห็นสถานะการใช้ไฟฟ้าในมุมที่เข้าใจง่ายและพร้อมใช้งานจริง</p>
-    <div class="pm-instrument" aria-label="ตัวอย่างค่าการวัด">
-      <div class="pm-scope" aria-hidden="true">
-        <div class="pm-scope-grid"></div><div class="pm-scope-label">LIVE TRACE · CH1</div><div class="pm-scope-live">● RUN</div>
-        <svg class="pm-scope-wave" viewBox="0 0 1000 100" preserveAspectRatio="none">
-          <path d="M0 57 C35 57 45 34 72 34 S112 78 145 62 S185 18 220 49 S260 84 295 57 S335 24 370 43 S410 76 450 58 S490 20 530 47 S570 81 610 60 S650 26 690 44 S730 76 770 57 S810 19 850 48 S890 79 925 59 S965 38 1000 47"/>
-        </svg><div class="pm-scope-trace"></div>
-      </div>
-      <div class="pm-readout"><div class="pm-readout-item"><div class="pm-readout-label">แรงดัน</div><div class="pm-readout-value">230<span>V</span></div></div><div class="pm-readout-item"><div class="pm-readout-label">กำลังไฟฟ้า</div><div class="pm-readout-value">18.6<span>kW</span></div></div><div class="pm-readout-item"><div class="pm-readout-label">พลังงานวันนี้</div><div class="pm-readout-value">126.4<span>kWh</span></div></div></div>
-    </div>
-  </div><div><div class="pm-live"><span class="pm-live-dot" aria-hidden="true"></span>ระบบมอนิเตอร์พร้อมใช้งาน</div><div class="pm-statusbar"><span>สถานะระบบ</span><strong><i class="bx bx-check-circle me-1" aria-hidden="true"></i> พร้อมใช้งาน</strong></div></div></section>
-  <section class="pm-login-panel" aria-labelledby="pm-signin-title"><div class="pm-login-card">
-    <h2 id="pm-signin-title" class="pm-login-title">เข้าสู่ระบบ</h2><div class="pm-login-copy">ใช้บัญชีของคุณเพื่อเข้าสู่ Power Monitoring Dashboard</div>
-    <div class="alert alert-dismissible fade show py-2 l_err pm-error" role="alert"><strong>เข้าสู่ระบบไม่สำเร็จ</strong><span>กรุณาตรวจสอบชื่อผู้ใช้และรหัสผ่านแล้วลองอีกครั้ง</span></div>
-    <form class="row g-3" id="login" onsubmit="return false">
-      <div class="col-12 pm-field"><label for="name" class="pm-field-label">ชื่อผู้ใช้</label><input id="name" type="text" class="form-control" name="name" placeholder="ระบุชื่อผู้ใช้" autocomplete="username"><div class="invalid-feedback">กรุณาระบุชื่อผู้ใช้</div></div>
-      <div class="col-12 pm-field"><label for="pass" class="pm-field-label">รหัสผ่าน</label><div class="input-group" id="show_hide_password"><input id="pass" type="password" class="form-control border-end-0" name="pass" placeholder="ระบุรหัสผ่าน" autocomplete="current-password"><a href="javascript:;" class="input-group-text bg-transparent" aria-label="แสดงหรือซ่อนรหัสผ่าน"><i class="bx bx-hide" aria-hidden="true"></i></a><div class="invalid-feedback">กรุณาระบุรหัสผ่าน</div></div></div>
-      <div class="col-12"><div id="login-turnstile" class="pm-turnstile" aria-label="การตรวจสอบความปลอดภัย"></div></div>
-      <div class="col-12"><div class="d-grid"><button type="submit" class="btn pm-login-btn"><i class="bx bxs-lock-open me-1" aria-hidden="true"></i>เข้าสู่ Power Monitor</button></div></div>
-      <div class="col-12"><div class="pm-security-note"><i class="bx bx-shield-quarter" aria-hidden="true"></i><span>พื้นที่นี้สำหรับผู้ใช้งานที่ได้รับอนุญาต โปรดเก็บข้อมูลบัญชีของคุณเป็นความลับ</span></div></div>
-    </form>
-  </div></section>
-</div></div>
+        <!-- IMPECCABLE DIRECTION CONTRACT
+          THESIS: Power Monitor should feel like a real measurement instrument, not a generic dashboard login.
+          OWN-WORLD: graphite instrument panel, phosphor-green measurement accent, etched graticule, crisp controls, measured spacing.
+          STORY: visitors immediately understand this is an electrical monitoring system, then sign in through a calm, technical control surface.
+          FIRST VIEWPORT: left side establishes the instrument world with a live-style graticule/readout; right side keeps the authentication task focused and dominant.
+          FORM: assigned grounded direction 4, oscilloscope signal-bench, seed 5bdc253b.
+          FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance
+        -->
+        <div class="pm-login-shell">
+          <div class="pm-login-grid">
+          <section class="pm-hero" aria-labelledby="pm-login-h1"><div>
+            <div class="pm-brand">
+              <div class="pm-brand-mark">
+                <i class="bx bx-bolt-circle" aria-hidden="true"></i>
+              </div>
+              <div>
+                <h1 id="pm-login-h1" class="pm-brand-title mb-0">POWER MONITOR</h1>
+                <div class="pm-brand-sub">Electrical Monitoring Platform</div>
+              </div>
+            </div>
+            <h2>มองเห็นระบบไฟฟ้า<br>ได้ชัดเจนทุกช่วงเวลา</h2>
+            <p>ติดตามแรงดัน กระแส กำลังไฟฟ้า และพลังงานจากมิเตอร์ที่เชื่อมต่อกับระบบ เพื่อให้คุณเห็นสถานะการใช้ไฟฟ้าในมุมที่เข้าใจง่ายและพร้อมใช้งานจริง</p>
+            <div class="pm-instrument" aria-label="ตัวอย่างค่าการวัด">
+              <div class="pm-scope" aria-hidden="true">
+                <div class="pm-scope-grid"></div>
+                <div class="pm-scope-label">LIVE TRACE · CH1</div>
+                <div class="pm-scope-live">● RUN</div>
+                <svg class="pm-scope-wave" viewBox="0 0 1000 100" preserveAspectRatio="none">
+                  <path d="M0 57 C35 57 45 34 72 34 S112 78 145 62 S185 18 220 49 S260 84 295 57 S335 24 370 43 S410 76 450 58 S490 20 530 47 S570 81 610 60 S650 26 690 44 S730 76 770 57 S810 19 850 48 S890 79 925 59 S965 38 1000 47"/>
+                </svg>
+                <div class="pm-scope-trace"></div>
+              </div>
+              <div class="pm-readout">
+                <div class="pm-readout-item">
+                  <div class="pm-readout-label">แรงดัน</div>
+                  <div class="pm-readout-value">230<span>V</span></div>
+                </div>
+                <div class="pm-readout-item">
+                  <div class="pm-readout-label">กำลังไฟฟ้า</div>
+                  <div class="pm-readout-value">18.6<span>kW</span></div>
+                </div>
+                <div class="pm-readout-item">
+                  <div class="pm-readout-label">พลังงานวันนี้</div>
+                  <div class="pm-readout-value">126.4<span>kWh</span></div>
+                </div>
+              </div>
+            </div>
+          </div><div><div class="pm-live"><span class="pm-live-dot" aria-hidden="true"></span>ระบบมอนิเตอร์พร้อมใช้งาน</div><div class="pm-statusbar"><span>สถานะระบบ</span><strong><i class="bx bx-check-circle me-1" aria-hidden="true"></i> พร้อมใช้งาน</strong></div></div></section>
+          <section class="pm-login-panel" aria-labelledby="pm-signin-title"><div class="pm-login-card">
+            <h2 id="pm-signin-title" class="pm-login-title">เข้าสู่ระบบ</h2><div class="pm-login-copy">ใช้บัญชีของคุณเพื่อเข้าสู่ Power Monitoring Dashboard</div>
+            <div class="alert alert-dismissible fade show py-2 l_err pm-error" role="alert"><strong>เข้าสู่ระบบไม่สำเร็จ</strong><span>กรุณาตรวจสอบชื่อผู้ใช้และรหัสผ่านแล้วลองอีกครั้ง</span></div>
+            <form class="row g-3" id="login" onsubmit="return false">
+              <div class="col-12 pm-field"><label for="name" class="pm-field-label">ชื่อผู้ใช้</label><input id="name" type="text" class="form-control" name="name" placeholder="ระบุชื่อผู้ใช้" autocomplete="username"><div class="invalid-feedback">กรุณาระบุชื่อผู้ใช้</div></div>
+              <div class="col-12 pm-field"><label for="pass" class="pm-field-label">รหัสผ่าน</label><div class="input-group" id="show_hide_password"><input id="pass" type="password" class="form-control border-end-0" name="pass" placeholder="ระบุรหัสผ่าน" autocomplete="current-password"><a href="javascript:;" class="input-group-text bg-transparent" aria-label="แสดงหรือซ่อนรหัสผ่าน"><i class="bx bx-hide" aria-hidden="true"></i></a><div class="invalid-feedback">กรุณาระบุรหัสผ่าน</div></div></div>
+              <div class="col-12"><div id="login-turnstile" class="pm-turnstile" aria-label="การตรวจสอบความปลอดภัย"></div></div>
+              <div class="col-12"><div class="d-grid"><button type="submit" class="btn pm-login-btn"><i class="bx bxs-lock-open me-1" aria-hidden="true"></i>เข้าสู่ Power Monitor</button></div></div>
+              <div class="col-12"><div class="pm-security-note"><i class="bx bx-shield-quarter" aria-hidden="true"></i><span>พื้นที่นี้สำหรับผู้ใช้งานที่ได้รับอนุญาต โปรดเก็บข้อมูลบัญชีของคุณเป็นความลับ</span></div></div>
+            </form>
+          </div></section>
+          </div></div>
       </div>
       <div id="page-index">
         <!--start header wrapper-->
