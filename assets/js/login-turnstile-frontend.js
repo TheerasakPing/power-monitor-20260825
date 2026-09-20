@@ -3,6 +3,8 @@
   'use strict';
 
   var SITE_KEY = '0x4AAAAAAEb0MY0iBb-TVKbC';
+  // TEMPORARILY DISABLED: keep session/CORS helpers active, but do not run Turnstile.
+  var TURNSTILE_ENABLED = false;
   var initialized = false;
   var widgetId = null;
   var readoutTimer = null;
@@ -53,6 +55,7 @@
 
   window.PowerMonitorTurnstile = {
     isReady: function () {
+      if (!TURNSTILE_ENABLED) return true;
       var form = document.getElementById('login');
       return !!(form && form.dataset.turnstileReady === '1' && getToken());
     },
@@ -93,8 +96,15 @@
     var form = document.getElementById('login');
     if (!form || initialized) return;
     initialized = true;
-    setReady(false, 'Please complete the Cloudflare verification.');
     animateReadouts();
+
+    // TEMPORARILY DISABLED: skip Turnstile widget/script initialization.
+    if (!TURNSTILE_ENABLED) {
+      setReady(true, '');
+      return;
+    }
+
+    setReady(false, 'Please complete the Cloudflare verification.');
 
     var wrapper = document.createElement('div');
     wrapper.className = 'col-12 pm-turnstile-runtime';
