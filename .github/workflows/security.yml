@@ -48,22 +48,6 @@ jobs:
   #       uses: github/codeql-action/analyze@v3
   #       with:
   #         category: "/language:${{ matrix.language }}"
-  build-and-deploy:
-    name: Deploy Static Site
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: .
-          publish_branch: gh-pages
-          force_orphan: true
-
   # dependency-review:
   #   name: Dependency Review
   #   runs-on: ubuntu-latest
