@@ -2517,7 +2517,7 @@ function renderTable(masterData, mode) {
     newData.push([
       ts, // full timestamp
       ts.slice(0, 10), // date portion
-      ts.slice(11, 16), // time portion
+      ts.slice(11, 16), // time portion 
       ...row.slice(1), // additional data columns
     ]);
   });

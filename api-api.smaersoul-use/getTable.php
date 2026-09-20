@@ -62,7 +62,8 @@ elseif ($phase == 2) {
 else { // Phase 1
     $tableName = "tb_data_sensor";
     $fields = "round(AVG(`data_v_L-N-AVG`), 2), round(AVG(`data_c_AVG`), 2), 
-               round(AVG(`data_atp-Total`), 2), round(AVG(`data_pf`), 2), round(AVG(`data_e`), 2), round(AVG(`data_temp`), 2)";
+               round(AVG(`data_atp-Total`), 2), 
+               round(AVG(`data_pf`), 2), round(AVG(`data_e`), 2), round(AVG(`data_temp`), 2)";
 }
 
 // 3. รวมร่าง SQL
