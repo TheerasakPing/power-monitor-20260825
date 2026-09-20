@@ -940,6 +940,7 @@ async function dashboard(select) {
                                                         <th class="text-center">Voltage (V)</th>
                                                         <th class="text-center">Current (A)</th>
                                                         <th class="text-center">Power (KW)</th>
+                                                        <th class="text-center">Total Power Factor (TPF)</th>
                                                         <th class="text-center">Energy (KWh)</th>
                                                         <th class="text-center th_temp">Temp (°C)</th>
                                                     </tr>
@@ -963,6 +964,7 @@ async function dashboard(select) {
                                                         <th class="text-center">Power B (KW)</th>
                                                         <th class="text-center">Power C (KW)</th>
                                                         <th class="text-center">Power Total (KW)</th>
+                                                        <th class="text-center">Total Power Factor (TPF)</th>
                                                         <th class="text-center">Energy_Delivered (KWh)</th>
                                                         <th class="text-center th_temp">Temp (°C)</th>
                                                     </tr>

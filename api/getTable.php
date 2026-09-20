@@ -54,6 +54,7 @@
                 round( AVG(CASE WHEN data_id < 353880 THEN `data_atp-B` * (-1) ELSE `data_atp-B` END), 2) AS p_B,
                 round( AVG(CASE WHEN data_id < 353880 THEN `data_atp-C` * (-1) ELSE `data_atp-C` END), 2) AS p_C,
                 round( AVG(CASE WHEN data_id < 353880 THEN `data_atp-Total` * (-1) ELSE `data_atp-Total` END), 2) AS p_Total,
+                round( AVG(CASE WHEN data_id < 353880 THEN `data_pf` * (-1) ELSE `data_pf` END), 2) AS pf_data,
                 round( AVG(CASE WHEN data_id < 353880 THEN `data_e` * (-1) ELSE `data_e` END), 2) AS e_data,
                 round( AVG(`data_temp`), 2) AS t_data
                 FROM `tb_data_sensor` WHERE $where_d GROUP BY SUBSTRING(`data_timestamp`,1,18) ORDER BY `data_timestamp`";
@@ -74,6 +75,7 @@
                 round( AVG(`data_atp-B`), 2) AS p_B,
                 round( AVG(`data_atp-C`), 2) AS p_C,
                 round( AVG(`data_atp-Total`), 2) AS p_Total,
+                round( AVG(`data_pf`), 2) AS pf_data,
                 round( AVG(`data_e`), 2) AS e_data,
                 round( AVG(`data_temp`), 2) AS t_data
                 FROM `tb_data_sensor` WHERE $where_d GROUP BY SUBSTRING(`data_timestamp`,1,18) ORDER BY `data_timestamp`";
@@ -88,6 +90,7 @@
                 round( AVG(`data_v`), 2) AS v_Avg,
                 round( AVG(`data_c`), 2) AS c_Avg,
                 round( (AVG(`data_p`)/1000)*(-1), 2) AS p_Total,
+                round( AVG(`data_pf`), 2) AS pf_data,
                 round( AVG(`data_e`), 2) AS e_data,
                 round( AVG(`data_t`), 2) AS t_data
             FROM `tb_data_sensor_mini` WHERE $where_d AND data_v != 0 GROUP BY SUBSTRING(`data_timestamp`,1,18) ORDER BY `data_timestamp`";
@@ -99,6 +102,7 @@
                 round( AVG(`data_v`), 2) AS v_Avg,
                 round( AVG(`data_c`), 2) AS c_Avg,
                 round( (AVG(`data_p`)/1000), 2) AS p_Total,
+                round( AVG(`data_pf`), 2) AS pf_data,
                 round( AVG(`data_e`), 2) AS e_data,
                 round( AVG(`data_t`), 2) AS t_data
                 FROM `tb_data_sensor_mini` WHERE $where_d GROUP BY SUBSTRING(`data_timestamp`,1,18) ORDER BY `data_timestamp`";
@@ -111,6 +115,7 @@
             round( AVG(`data_v_L-N-AVG`), 2) AS v_Avg,
             round( AVG(`data_c_AVG`), 2) AS c_Avg,
             round( AVG(`data_atp-Total`), 2) AS p_Total,
+            round( AVG(`data_pf`), 2) AS pf_data,
             round( AVG(`data_e`), 2) AS e_data,
             round( AVG(`data_temp`), 2) AS t_data
         FROM `tb_data_sensor` WHERE $where_d GROUP BY SUBSTRING(`data_timestamp`,1,18) ORDER BY `data_timestamp`";
