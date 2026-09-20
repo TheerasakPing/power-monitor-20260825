@@ -232,7 +232,9 @@
             <form class="row g-3" id="login" onsubmit="return false">
               <div class="col-12 pm-field"><label for="name" class="pm-field-label">ชื่อผู้ใช้</label><input id="name" type="text" class="form-control" name="name" placeholder="ระบุชื่อผู้ใช้" autocomplete="username"><div class="invalid-feedback">กรุณาระบุชื่อผู้ใช้</div></div>
               <div class="col-12 pm-field"><label for="pass" class="pm-field-label">รหัสผ่าน</label><div class="input-group" id="show_hide_password"><input id="pass" type="password" class="form-control border-end-0" name="pass" placeholder="ระบุรหัสผ่าน" autocomplete="current-password"><a href="javascript:;" class="input-group-text bg-transparent" aria-label="แสดงหรือซ่อนรหัสผ่าน"><i class="bx bx-hide" aria-hidden="true"></i></a><div class="invalid-feedback">กรุณาระบุรหัสผ่าน</div></div></div>
+              <!-- TEMPORARILY DISABLED: Cloudflare Turnstile
               <div class="col-12"><div id="login-turnstile" class="pm-turnstile" aria-label="การตรวจสอบความปลอดภัย"></div></div>
+              -->
               <div class="col-12"><div class="d-grid"><button type="submit" class="btn pm-login-btn"><i class="bx bxs-lock-open me-1" aria-hidden="true"></i>เข้าสู่ Power Monitor</button></div></div>
               <div class="col-12"><div class="pm-security-note"><i class="bx bx-shield-quarter" aria-hidden="true"></i><span>พื้นที่นี้สำหรับผู้ใช้งานที่ได้รับอนุญาต โปรดเก็บข้อมูลบัญชีของคุณเป็นความลับ</span></div></div>
             </form>
@@ -572,24 +574,27 @@
           }
         });
         
+        /* TEMPORARILY DISABLED: Cloudflare Turnstile
         // ตัวแปรสำหรับเก็บ Widget ID ของ Cloudflare Turnstile
         let turnstileWidgetId = null;
 
         // Render Cloudflare Turnstile เข้าไปที่ #login-turnstile
         if (window.turnstile && $("#login-turnstile").length) {
           turnstileWidgetId = turnstile.render("#login-turnstile", {
-            sitekey: "YOUR_CLOUDFLARE_SITE_KEY", // <--- นำ Site Key ของ Cloudflare มาใส่ตรงนี้
+            sitekey: "YOUR_CLOUDFLARE_SITE_KEY",
             theme: "dark"
           });
         }
+        */
 
         $("#login").submit(function (e) {
           e.preventDefault();
 
-          // 1. ดึง Token จาก Cloudflare Turnstile
+          /* TEMPORARILY DISABLED: Cloudflare Turnstile token
           let turnstileResponse = window.turnstile && typeof turnstileWidgetId !== 'undefined' && turnstileWidgetId !== null 
             ? turnstile.getResponse(turnstileWidgetId) 
             : "";
+          */
 
           // 2. ตรวจสอบค่าว่าง (Validation) ที่ถูกต้อง
           let $name = $("#name"); // อ้างอิง id="name"
@@ -615,11 +620,13 @@
             return false;
           }
 
-          // 3. รวมข้อมูลจาก Form และ Turnstile Token เข้าด้วยกัน
+          // Cloudflare Turnstile ถูกปิดใช้งานชั่วคราว จึงส่งเฉพาะข้อมูล Login
           let formData = $(this).serialize();
+          /* TEMPORARILY DISABLED: Cloudflare Turnstile token
           if (turnstileResponse) {
             formData += "&cf-turnstile-response=" + encodeURIComponent(turnstileResponse);
           }
+          */
 
           // 4. ส่งข้อมูลไปยัง Backend ด้วย AJAX
           $.ajax({
@@ -632,10 +639,11 @@
                 if (res.message === 'No user') {
                   $(".l_err").show();
                   
-                  // Reset Captcha เมื่อรหัสผิด
+                  /* TEMPORARILY DISABLED: Cloudflare Turnstile reset
                   if (window.turnstile && typeof turnstileWidgetId !== 'undefined' && turnstileWidgetId !== null) {
                     turnstile.reset(turnstileWidgetId);
                   }
+                  */
                   return false;
                 } else if (res.message === "Suspend") {
                   swal({
@@ -646,10 +654,11 @@
                     confirmButtonColor: "#32CD32",
                   });
                   
-                  // Reset Captcha เมื่อบัญชีโดนระงับ
+                  /* TEMPORARILY DISABLED: Cloudflare Turnstile reset
                   if (window.turnstile && typeof turnstileWidgetId !== 'undefined' && turnstileWidgetId !== null) {
                     turnstile.reset(turnstileWidgetId);
                   }
+                  */
                   return false;
                 }
               } 
@@ -667,10 +676,11 @@
                 confirmButtonColor: "#32CD32",
               });
               
-              // Reset Captcha เมื่อเกิด Error
+              /* TEMPORARILY DISABLED: Cloudflare Turnstile reset
               if (window.turnstile && typeof turnstileWidgetId !== 'undefined' && turnstileWidgetId !== null) {
                 turnstile.reset(turnstileWidgetId);
               }
+              */
             },
           });
         });$(".logout").click(function () {
