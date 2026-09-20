@@ -1408,6 +1408,7 @@ function addArray(newData) {
             newData[0].atp_B,
             newData[0].atp_C,
             newData[0].atp_Total,
+            newData[0].pf,
             newData[0].e,
             newData[0].temp,
           ]);
@@ -1420,6 +1421,7 @@ function addArray(newData) {
             newData[0].v_LN,
             newData[0].c_AVG,
             newData[0].atp_Total,
+            newData[0].pf,
             newData[0].e,
             newData[0].temp,
           ]);
