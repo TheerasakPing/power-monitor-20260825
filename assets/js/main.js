@@ -2526,7 +2526,7 @@ function renderTable(masterData, mode) {
 
   // Clear any existing data and then add the new data.
   table.clear().rows.add(newData).draw();
-
+  
   // สำหรับ mode ที่ไม่ใช่ realtime ซ่อน pagination controls
   if (mode !== "realtime") {
     if (newData.length > 0) {
