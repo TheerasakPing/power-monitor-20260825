@@ -12,9 +12,7 @@
   if (window.jQuery) {
     window.jQuery.ajaxSetup({
       timeout: 15000,
-      cache: false,
-      xhrFields: { withCredentials: true },
-      headers: { 'X-Requested-With': 'XMLHttpRequest' }
+      cache: false
     });
   }
 
